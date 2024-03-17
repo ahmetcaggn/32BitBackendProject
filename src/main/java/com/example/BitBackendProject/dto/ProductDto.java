@@ -14,5 +14,5 @@ public class ProductDto {
     private Long productCode;
     private String name;
     private Float price;
-
+    private Float tax;
 }

@@ -13,10 +13,14 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
-    @Column(name = "productCode")
+    @Column(name = "product_code")
     private Long productCode;
     @Column(name = "name")
     private String name;
     @Column(name = "price")
     private Float price;
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+    @Column(name = "tax")
+    private Float tax;
 }
