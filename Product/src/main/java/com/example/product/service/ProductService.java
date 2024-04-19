@@ -1,9 +1,8 @@
-package com.example.BitBackendProject.service;
+package com.example.product.service;
 
-import com.example.BitBackendProject.dto.ProductDto;
-import com.example.BitBackendProject.dto.ProductRequest;
-import com.example.BitBackendProject.entity.Product;
-import com.example.BitBackendProject.repository.ProductRepository;
+import com.example.product.dto.ProductDto;
+import com.example.product.entity.Product;
+import com.example.product.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

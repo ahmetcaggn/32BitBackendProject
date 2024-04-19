@@ -1,17 +1,12 @@
-package com.example.BitBackendProject.repository;
+package com.example.product.repository;
 
-import com.example.BitBackendProject.dto.ProductDto;
-import com.example.BitBackendProject.entity.Product;
+import com.example.product.entity.Product;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
-import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
-import org.hibernate.ObjectDeletedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import javax.swing.*;
 import java.util.List;
 
 @Repository
