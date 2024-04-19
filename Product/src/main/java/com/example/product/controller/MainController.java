@@ -2,11 +2,10 @@ package com.example.product.controller;
 
 import com.example.product.dto.ProductDto;
 import com.example.product.service.ProductService;
-import jakarta.persistence.NoResultException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Set;
 
 
 @RestController
@@ -19,13 +18,12 @@ public class MainController {
     }
 
     @GetMapping("/product/{id}")
-    public ProductDto getProductById(@PathVariable(value = "id") Long id) throws NoResultException{
+    public ProductDto getProductById(@PathVariable(value = "id") Long id){
         return productService.getProductById(id);
     }
 
     @GetMapping("/product")
-    public List<ProductDto> getAllProducts() throws NoResultException{
+    public Set<ProductDto> getAllProducts(){
         return productService.getAllProducts();
     }
-
 }

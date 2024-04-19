@@ -1,19 +1,22 @@
 package com.example.product.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Table(name = "product_list")
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
+@Entity
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
-    @Column(name = "product_code")
+    @Column(name = "product_code", unique = true)
     private Long productCode;
     @Column(name = "name")
     private String name;
@@ -24,3 +27,5 @@ public class Product {
     @Column(name = "tax")
     private Float tax;
 }
+
+
