@@ -1,4 +1,4 @@
-package com.example.BitBackendProject.dto;
+package com.example.product.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.example.BitBackendProject.entity;
+package com.example.product.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

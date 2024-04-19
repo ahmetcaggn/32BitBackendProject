@@ -1,10 +1,9 @@
-package com.example.BitBackendProject.controller;
+package com.example.product.controller;
 
-import com.example.BitBackendProject.dto.ProductDto;
-import com.example.BitBackendProject.service.ProductService;
+import com.example.product.dto.ProductDto;
+import com.example.product.service.ProductService;
 import jakarta.persistence.NoResultException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
