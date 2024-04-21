@@ -2,12 +2,12 @@ package com.example.product.service;
 
 import com.example.product.dto.ProductDto;
 import com.example.product.entity.Product;
+import com.example.product.exception.ProductNotFoundException;
 import com.example.product.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class ProductService {
@@ -19,37 +19,19 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-
     public ProductDto getProductById(Long id) {
-        try {
-            Product fetchedProduct = productRepository.getProductById(id);
-
-            ProductDto productDto = new ProductDto();
-
-            productDto.setId(fetchedProduct.getId());
-            productDto.setProductCode(fetchedProduct.getProductCode());
-            productDto.setName(fetchedProduct.getName());
-            productDto.setPrice(fetchedProduct.getPrice());
-            productDto.setTax(fetchedProduct.getTax());
-            return productDto;
-        } catch (NullPointerException e) {
-            return null;
-        }
+        Product product = productRepository.findByIdAndIsDeletedFalse(id).orElseThrow(
+                () -> new ProductNotFoundException("There is no product with id: " + id)
+        );
+        return new ProductDto(product);
     }
 
-    public List<ProductDto> getAllProducts() {
-        List<Product> productList = productRepository.getAllProducts();
-        List<ProductDto> productDtoList = new ArrayList<>();
+    public Set<ProductDto> getAllProducts() {
+        Set<Product> productList = productRepository.findAllByIsDeletedFalse();
+        Set<ProductDto> productDtoSet = new HashSet<>();
         for (Product product : productList) {
-            ProductDto productDto = new ProductDto();
-            productDto.setId(product.getId());
-            productDto.setName(product.getName());
-            productDto.setPrice(product.getPrice());
-            productDto.setProductCode(product.getProductCode());
-            productDto.setTax(product.getTax());
-            productDtoList.add(productDto);
+            productDtoSet.add(new ProductDto(product));
         }
-        return productDtoList;
+        return productDtoSet;
     }
-
 }
