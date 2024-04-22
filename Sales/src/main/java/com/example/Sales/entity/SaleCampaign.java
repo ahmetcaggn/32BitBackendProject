@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -16,7 +15,8 @@ import java.util.List;
 @Entity
 public class SaleCampaign {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "saleCampaign_generator",allocationSize = 1)
+    @GeneratedValue(generator = "saleCampaign_generator",strategy = GenerationType.SEQUENCE)
     private Long id;
     private float discountAmount;
 

@@ -16,9 +16,10 @@ import lombok.Setter;
 @Entity
 public class SaleProduct {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "saleProduct_generator",allocationSize = 1)
+    @GeneratedValue(generator = "saleProduct_generator",strategy = GenerationType.SEQUENCE)
     private Long id;
-    private Integer quantity;
+    private Float quantity;
 
     @JsonManagedReference
     @ManyToOne
