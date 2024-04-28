@@ -15,10 +15,11 @@ public class CampaignController {
 
     private final CampaignService campaignService;
 
-    @Autowired
     public CampaignController(CampaignService campaignService) {
         this.campaignService = campaignService;
     }
+
+    //Get Requests
 
     @GetMapping({"","/"})
     public List<CampaignDto> getAllCampaigns() {
@@ -29,6 +30,8 @@ public class CampaignController {
     public CampaignDto getCampaignById(@PathVariable("id") Long campaignId) {
         return campaignService.getCampaignById(campaignId);
     }
+
+    //Post Requests
 
     @PostMapping({"","/"})
     public Campaign createCampaign(@RequestBody CampaignRequest campaignRequest) {

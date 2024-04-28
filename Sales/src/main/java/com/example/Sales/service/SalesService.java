@@ -2,15 +2,10 @@ package com.example.Sales.service;
 
 import com.example.Sales.dto.*;
 import com.example.Sales.entity.*;
-import com.example.Sales.exception.CampaignNotFoundException;
-import com.example.Sales.exception.ProductNotFoundException;
-import com.example.Sales.exception.SaleNotFoundException;
-import com.example.Sales.exception.SaleProductNotFoundException;
+import com.example.Sales.exception.*;
+import com.example.Sales.interfaces.ProductInterface;
 import com.example.Sales.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,19 +14,18 @@ import java.util.List;
 @Service
 public class SalesService {
 
-    @Autowired
-    private WebClient.Builder webClientBuilder;
-    SaleRepository saleRepository;
-    SaleProductRepository saleProductRepository;
-    CampaignRepository campaignRepository;
-    SaleCampaignRepository saleCampaignRepository;
+    private final ProductInterface productInterface;
+    private final SaleRepository saleRepository;
+    private final SaleProductRepository saleProductRepository;
+    private final CampaignRepository campaignRepository;
+    private final SaleCampaignRepository saleCampaignRepository;
 
-    @Autowired
-    public SalesService(SaleRepository saleRepository, SaleProductRepository saleProductRepository, CampaignRepository campaignRepository, SaleCampaignRepository saleCampaignRepository) {
+    public SalesService(SaleRepository saleRepository, SaleProductRepository saleProductRepository, CampaignRepository campaignRepository, SaleCampaignRepository saleCampaignRepository, ProductInterface productInterface) {
         this.saleRepository = saleRepository;
         this.saleProductRepository = saleProductRepository;
         this.campaignRepository = campaignRepository;
         this.saleCampaignRepository = saleCampaignRepository;
+        this.productInterface = productInterface;
     }
 
     public SaleDto createSale() {
@@ -54,16 +48,8 @@ public class SalesService {
         Sale sale = saleRepository.findById(saleId).orElseThrow(
                 () -> new SaleNotFoundException("There is no sale with id: " + saleId)
         );
-        ProductDto productDto = webClientBuilder.build()
-                .get()
-                .uri("http://Product/product/" + productId)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
-                    throw new ProductNotFoundException("There is no product with id: " + productId);
-                })
-                .bodyToMono(ProductDto.class)
-                .block();
 
+        ProductDto productDto = productInterface.getProductById(productId);
         SaleProduct saleProduct = new SaleProduct();
         saleProduct.setProduct(new Product(productDto));
         if (saleProductRequest.getQuantity() == null) {

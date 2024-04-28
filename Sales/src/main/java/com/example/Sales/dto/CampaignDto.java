@@ -18,14 +18,14 @@ public class CampaignDto {
     private Long id;
     private String name;
     private float discountRate;
-    private Set<Long> includedProducts = new HashSet<>();
+    private Set<ProductDto> includedProducts = new HashSet<>();
 
     public CampaignDto(Campaign campaign){
         this.id = campaign.getId();
         this.name = campaign.getName();
         this.discountRate = campaign.getDiscountRate();
         for (Product product : campaign.getIncludedProducts()){
-            this.includedProducts.add(product.getId());
+            this.includedProducts.add(new ProductDto(product));
         }
     }
 }

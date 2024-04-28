@@ -50,7 +50,4 @@ public class Product {
         this.tax = productDto.getTax();
 
     }
-    public Product(Long id){
-        this.id = id;
-    }
 }

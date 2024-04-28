@@ -3,7 +3,6 @@ package com.example.Sales.controller;
 import com.example.Sales.dto.*;
 import com.example.Sales.service.CampaignService;
 import com.example.Sales.service.SalesService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +15,6 @@ public class SaleController {
     SalesService salesService;
     CampaignService campaignService;
 
-    @Autowired
     public SaleController(SalesService salesService, CampaignService campaignService) {
         this.salesService = salesService;
         this.campaignService = campaignService;
@@ -34,12 +32,10 @@ public class SaleController {
         return salesService.getSaleById(id);
     }
 
-
     @GetMapping("/{saleId}/campaigns")
     public List<CampaignDto> getAllRelevantCampaignsBySaleId(@PathVariable("saleId") Long id) {
         return salesService.getAllRelevantCampaigns(id);
     }
-
 
     //Post Requests
 
@@ -67,12 +63,10 @@ public class SaleController {
 
     //Delete Requests
 
-
     @DeleteMapping("/saleProduct/{saleProductId}")
     public ResponseEntity<String> deleteSaleProduct(@PathVariable("saleProductId") Long saleProductId) {
         salesService.deleteSaleProduct(saleProductId);
         return ResponseEntity.ok("SaleProduct deleted successfully with id: "+ saleProductId);
     }
-
 
 }
