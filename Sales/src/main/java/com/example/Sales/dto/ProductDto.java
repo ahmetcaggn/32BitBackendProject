@@ -1,5 +1,6 @@
 package com.example.Sales.dto;
 
+import com.example.Sales.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,4 +16,12 @@ public class ProductDto {
     private String name;
     private Float price;
     private Float tax;
+
+    public ProductDto(Product product) {
+        this.id = product.getId();
+        this.productCode = product.getProductCode();
+        this.name = product.getName();
+        this.price = product.getPrice();
+        this.tax = product.getTax();
+    }
 }

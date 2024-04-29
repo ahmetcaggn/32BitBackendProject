@@ -8,9 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -20,7 +18,8 @@ import java.util.Set;
 @Entity
 public class Campaign {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "campaign_generator",allocationSize = 1)
+    @GeneratedValue(generator = "campaign_generator",strategy = GenerationType.SEQUENCE)
     private Long id;
     private String name;
     private float discountRate;
@@ -32,7 +31,7 @@ public class Campaign {
             joinColumns = @JoinColumn(name = "Campaign_Id"),
             inverseJoinColumns = @JoinColumn(name = "Product_Id")
     )
-    Set<Product> includedProducts;
+    private Set<Product> includedProducts;
 
     @JsonBackReference
     @OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL)

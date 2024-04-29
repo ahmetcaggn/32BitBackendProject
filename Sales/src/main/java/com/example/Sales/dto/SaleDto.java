@@ -10,7 +10,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -24,8 +23,8 @@ public class SaleDto {
     private float discountAmount;
     private float lastPrice;
     private LocalDateTime localDateTime;
-    private Set<Long> saleProducts = new HashSet<>();
-    private Set<Long> saleCampaigns = new HashSet<>();
+    private Set<ProductDto> saleProducts = new HashSet<>();
+    private Set<CampaignDto> saleCampaigns = new HashSet<>();
 
     public SaleDto(Sale sale) {
         this.id = sale.getId();
@@ -33,10 +32,10 @@ public class SaleDto {
         this.totalTax = sale.getTotalTax();
         this.localDateTime = sale.getDateTime();
         for (SaleProduct saleProduct : sale.getSalesProducts()){
-            this.saleProducts.add(saleProduct.getId());
+            this.saleProducts.add(new ProductDto(saleProduct.getProduct()));
         }
         for (SaleCampaign saleCampaign : sale.getSaleCampaigns()){
-            this.saleCampaigns.add(saleCampaign.getId());
+            this.saleCampaigns.add(new CampaignDto(saleCampaign.getCampaign()));
             this.discountAmount+=saleCampaign.getDiscountAmount();
         }
         this.lastPrice = this.totalAmount - this.discountAmount;

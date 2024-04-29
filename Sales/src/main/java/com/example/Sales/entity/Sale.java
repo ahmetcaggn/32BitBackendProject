@@ -1,17 +1,13 @@
 package com.example.Sales.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import reactor.netty.channel.ChannelMeters;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,7 +18,8 @@ import java.util.Set;
 @Entity
 public class Sale {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "sale_generator",allocationSize = 1)
+    @GeneratedValue(generator = "sale_generator",strategy = GenerationType.SEQUENCE)
     private Long id;
     private float totalAmount;
     private float totalTax;

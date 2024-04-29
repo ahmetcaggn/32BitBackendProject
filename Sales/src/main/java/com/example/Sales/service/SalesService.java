@@ -1,10 +1,10 @@
 package com.example.Sales.service;
 
-import com.example.Sales.dto.CampaignDto;
-import com.example.Sales.dto.SaleDto;
+import com.example.Sales.dto.*;
 import com.example.Sales.entity.*;
+import com.example.Sales.exception.*;
+import com.example.Sales.interfaces.ProductInterface;
 import com.example.Sales.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,55 +14,83 @@ import java.util.List;
 @Service
 public class SalesService {
 
-    ProductRepository productRepository;
-    SaleRepository saleRepository;
-    SaleProductRepository saleProductRepository;
-    CampaignRepository campaignRepository;
-    SaleCampaignRepository saleCampaignRepository;
+    private final ProductInterface productInterface;
+    private final SaleRepository saleRepository;
+    private final SaleProductRepository saleProductRepository;
+    private final CampaignRepository campaignRepository;
+    private final SaleCampaignRepository saleCampaignRepository;
 
-    @Autowired
-    public SalesService(ProductRepository productRepository, SaleRepository saleRepository, SaleProductRepository saleProductRepository, CampaignRepository campaignRepository, SaleCampaignRepository saleCampaignRepository) {
-        this.productRepository = productRepository;
+    public SalesService(SaleRepository saleRepository, SaleProductRepository saleProductRepository, CampaignRepository campaignRepository, SaleCampaignRepository saleCampaignRepository, ProductInterface productInterface) {
         this.saleRepository = saleRepository;
         this.saleProductRepository = saleProductRepository;
         this.campaignRepository = campaignRepository;
         this.saleCampaignRepository = saleCampaignRepository;
+        this.productInterface = productInterface;
     }
 
-    public SaleDto createSale(){
+    public SaleDto createSale() {
         Sale sale = new Sale();
         sale.setTotalAmount(0);
         sale.setTotalTax(0);
         sale.setDateTime(LocalDateTime.now());
         return new SaleDto(saleRepository.save(sale));
     }
-    public List<SaleDto> getAllSales(){
+
+    public List<SaleDto> getAllSales() {
         List<SaleDto> saleDtoList = new ArrayList<>();
-        for (Sale sale : saleRepository.findAll()){
+        for (Sale sale : saleRepository.findAll()) {
             saleDtoList.add(new SaleDto(sale));
         }
         return saleDtoList;
     }
-    public SaleDto addSaleProduct(Long saleId, Long productId, Integer quantity) {
 
-        Product product = productRepository.findByIsDeletedFalseAndId(productId);
-        Sale sale = saleRepository.findById(saleId).get();
+    public SaleProductDto addSaleProduct(Long saleId, Long productId, SaleProductRequest saleProductRequest) {
+        Sale sale = saleRepository.findById(saleId).orElseThrow(
+                () -> new SaleNotFoundException("There is no sale with id: " + saleId)
+        );
 
+        ProductDto productDto = productInterface.getProductById(productId);
         SaleProduct saleProduct = new SaleProduct();
-        saleProduct.setSale(sale);
-        saleProduct.setProduct(product);
-        saleProduct.setQuantity(quantity);
-
+        saleProduct.setProduct(new Product(productDto));
+        if (saleProductRequest.getQuantity() == null) {
+            saleProduct.setQuantity(1F);
+        } else {
+            saleProduct.setQuantity(saleProductRequest.getQuantity());
+        }
         setSaleTotalAmount(sale, saleProduct);
         setSaleTotalTax(sale, saleProduct);
+        saleProduct.setSale(sale);
 
+        return new SaleProductDto(saleProductRepository.save(saleProduct));
+    }
 
-        return new SaleDto(saleProductRepository.save(saleProduct).getSale());
+    public SaleProductDto updateSaleProduct(Long saleProductId, SaleProductRequest saleProductRequest) {
+        SaleProduct saleProduct = saleProductRepository.findById(saleProductId).orElseThrow(
+                () -> new SaleProductNotFoundException("There is no saleProduct with id: " + saleProductId)
+        );
+        saleProduct.setQuantity(saleProductRequest.getQuantity());
+        setSaleTotalAmount(saleProduct.getSale());
+        setSaleTotalTax(saleProduct.getSale());
+        return new SaleProductDto(saleProductRepository.save(saleProduct));
+    }
+
+    public void deleteSaleProduct(Long saleProductId) {
+        SaleProduct saleProduct = saleProductRepository.findById(saleProductId).orElseThrow(
+                () -> new SaleProductNotFoundException("There is no saleProduct with id: " + saleProductId + " to delete")
+        );
+        saleProductRepository.delete(saleProduct);
+        setSaleTotalTax(saleProduct.getSale());
+        setSaleTotalAmount(saleProduct.getSale());
+        saleRepository.save(saleProduct.getSale());
     }
 
     public SaleDto applyCampaignToSale(Long saleId, Long campaignId) {
-        Sale sale = saleRepository.findById(saleId).get();
-        Campaign campaign = campaignRepository.findById(campaignId).get();
+        Sale sale = saleRepository.findById(saleId).orElseThrow(
+                () -> new SaleNotFoundException("There is no sale with id: " + saleId)
+        );
+        Campaign campaign = campaignRepository.findById(campaignId).orElseThrow(
+                () -> new CampaignNotFoundException("There is no campaign with id: " + campaignId)
+        );
 
         float discountAmount = calculateDiscountAmount(getProductListInASale(sale), campaignId);
 
@@ -78,27 +106,31 @@ public class SalesService {
         return saleDto;
     }
 
-    public List<CampaignDto> getAllReleventCampaigns(Long saleId) {
-        Sale sale = saleRepository.findById(saleId).get();
+    public List<CampaignDto> getAllRelevantCampaigns(Long saleId) {
+        Sale sale = saleRepository.findById(saleId).orElseThrow(
+                () -> new SaleNotFoundException("There is no sale with id: " + saleId)
+        );
         List<Campaign> campaigns = new ArrayList<>();
         List<CampaignDto> campaignDtoList = new ArrayList<>();
-        for (SaleProduct saleProduct : sale.getSalesProducts()){
-            for (Campaign campaign : saleProduct.getProduct().getCampaigns()){
+        for (SaleProduct saleProduct : sale.getSalesProducts()) {
+            for (Campaign campaign : saleProduct.getProduct().getCampaigns()) {
                 if (!campaigns.contains(campaign)) {
                     campaigns.add(campaign);
                 }
             }
         }
-        for (Campaign campaign : campaigns){
+        for (Campaign campaign : campaigns) {
             campaignDtoList.add(new CampaignDto(campaign));
         }
         return campaignDtoList;
     }
 
     public float calculateDiscountAmount(List<Product> products, Long campaignId) {
-        Campaign campaign = campaignRepository.findById(campaignId).get();
+        Campaign campaign = campaignRepository.findById(campaignId).orElseThrow(
+                () -> new CampaignNotFoundException("There is no campaign with id: " + campaignId)
+        );
         List<Product> discountableProducts = new ArrayList<>();
-        Float discountAmount = 0f;
+        float discountAmount = 0f;
         for (Product product : campaign.getIncludedProducts()) {
             if (products.contains(product)) {
                 discountableProducts.add(product);
@@ -119,7 +151,9 @@ public class SalesService {
     }
 
     public SaleDto getSaleById(Long id) {
-        return new SaleDto(saleRepository.findById(id).get());
+        return new SaleDto(saleRepository.findById(id).orElseThrow(
+                () -> new SaleNotFoundException("There is no sale with id: " + id)
+        ));
     }
 
     public void setSaleTotalAmount(Sale sale) {
@@ -137,6 +171,14 @@ public class SalesService {
         }
         total += sP.getQuantity() * sP.getProduct().getPrice();
         sale.setTotalAmount(total);
+    }
+
+    public void setSaleTotalTax(Sale sale) {
+        float total = 0f;
+        for (SaleProduct saleProduct : sale.getSalesProducts()) {
+            total += saleProduct.getQuantity() * saleProduct.getProduct().getPrice() * saleProduct.getProduct().getTax() / 100;
+        }
+        sale.setTotalTax(total);
     }
 
     public void setSaleTotalTax(Sale sale, SaleProduct sP) {
