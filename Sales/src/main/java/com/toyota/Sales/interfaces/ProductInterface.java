@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Set;
 
-@FeignClient("Product")
+@FeignClient(value = "Product", path = "/product")
 public interface ProductInterface {
-    @GetMapping("/product/{id}")
+    @GetMapping("/{id}")
     ProductDto getProductById(@PathVariable(value = "id") Long id);
 
-    @GetMapping("/product")
+    @GetMapping("")
     Set<ProductDto> getAllProducts();
 }

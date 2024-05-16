@@ -1,6 +1,6 @@
-package com.toyota.Sales.dto;
+package com.toyota.report.dto;
 
-import com.toyota.Sales.entity.SaleProduct;
+import com.toyota.entity.SaleProduct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,13 +13,13 @@ import lombok.Setter;
 public class SaleProductDto {
     private Long id;
     private Float quantity;
-    private ProductDto product;
+    private Long productId;
     private Long saleId;
 
     public SaleProductDto(SaleProduct saleProduct){
         this.id = saleProduct.getId();
         this.quantity = saleProduct.getQuantity();
-        this.product = new ProductDto(saleProduct.getProduct());
+        this.productId = saleProduct.getProduct().getId();
         this.saleId = saleProduct.getSale().getId();
     }
 }

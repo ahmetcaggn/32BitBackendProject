@@ -21,6 +21,8 @@
         <module>Product</module>
         <module>UserManagement</module>
         <module>Gateway</module>
+        <module>Report</module>
+        <module>Entity</module>
     </modules>
 
     <properties>
