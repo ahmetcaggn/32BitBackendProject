@@ -13,13 +13,13 @@ import lombok.Setter;
 public class SaleProductDto {
     private Long id;
     private Float quantity;
-    private Long productId;
+    private ProductDto product;
     private Long saleId;
 
     public SaleProductDto(SaleProduct saleProduct){
         this.id = saleProduct.getId();
         this.quantity = saleProduct.getQuantity();
-        this.productId = saleProduct.getProduct().getId();
+        this.product = new ProductDto(saleProduct.getProduct());
         this.saleId = saleProduct.getSale().getId();
     }
 }

@@ -23,7 +23,7 @@ public class SaleDto {
     private float discountAmount;
     private float lastPrice;
     private LocalDateTime localDateTime;
-    private Set<ProductDto> saleProducts = new HashSet<>();
+    private Set<SaleProductDto> saleProducts = new HashSet<>();
     private Set<CampaignDto> saleCampaigns = new HashSet<>();
 
     public SaleDto(Sale sale) {
@@ -31,15 +31,14 @@ public class SaleDto {
         this.totalAmount = sale.getTotalAmount();
         this.totalTax = sale.getTotalTax();
         this.localDateTime = sale.getDateTime();
-        for (SaleProduct saleProduct : sale.getSalesProducts()){
-            this.saleProducts.add(new ProductDto(saleProduct.getProduct()));
+        for (SaleProduct saleProduct : sale.getSalesProducts()) {
+            this.saleProducts.add(new SaleProductDto(saleProduct));
         }
-        for (SaleCampaign saleCampaign : sale.getSaleCampaigns()){
+        for (SaleCampaign saleCampaign : sale.getSaleCampaigns()) {
             this.saleCampaigns.add(new CampaignDto(saleCampaign.getCampaign()));
-            this.discountAmount+=saleCampaign.getDiscountAmount();
+            this.discountAmount += saleCampaign.getDiscountAmount();
         }
         this.lastPrice = this.totalAmount - this.discountAmount;
     }
 
 }
-

@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/report")
 public class ReportController {
@@ -13,6 +15,12 @@ public class ReportController {
 
     public ReportController(ReportService reportService) {
         this.reportService = reportService;
+    }
+
+    @GetMapping("/createPdf/{id}")
+    public ResponseEntity<String> createPdf(@PathVariable("id") Long id) throws IOException {
+        reportService.createEmptyPdfBySaleId(id);
+        return ResponseEntity.ok("pdf file is created successfully");
     }
 
     @GetMapping("/sales/{id}")

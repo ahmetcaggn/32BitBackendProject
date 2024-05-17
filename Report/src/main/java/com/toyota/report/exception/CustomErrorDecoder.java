@@ -36,6 +36,6 @@ public class CustomErrorDecoder implements ErrorDecoder {
                 }
             }
         }
-        return null;
+        return new Exception(response.body().toString());
     }
 }
