@@ -2,11 +2,7 @@ package com.toyota.Sales.service;
 
 import com.toyota.Sales.dto.*;
 import com.toyota.Sales.entity.*;
-import com.toyota.Sales.exception.*;
-import com.toyota.Sales.dto.*;
-import com.toyota.Sales.entity.*;
 import com.toyota.Sales.interfaces.ProductInterface;
-import com.toyota.Sales.repository.*;
 import com.toyota.Sales.exception.CampaignNotFoundException;
 import com.toyota.Sales.exception.SaleNotFoundException;
 import com.toyota.Sales.exception.SaleProductNotFoundException;
@@ -14,11 +10,16 @@ import com.toyota.Sales.repository.CampaignRepository;
 import com.toyota.Sales.repository.SaleCampaignRepository;
 import com.toyota.Sales.repository.SaleProductRepository;
 import com.toyota.Sales.repository.SaleRepository;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import static com.toyota.Sales.util.SaleUtility.setSaleTotalAmount;
+import static com.toyota.Sales.util.SaleUtility.setSaleTotalTax;
 
 @Service
 public class SalesService {
@@ -28,6 +29,7 @@ public class SalesService {
     private final SaleProductRepository saleProductRepository;
     private final CampaignRepository campaignRepository;
     private final SaleCampaignRepository saleCampaignRepository;
+
 
     public SalesService(SaleRepository saleRepository, SaleProductRepository saleProductRepository, CampaignRepository campaignRepository, SaleCampaignRepository saleCampaignRepository, ProductInterface productInterface) {
         this.saleRepository = saleRepository;
@@ -45,15 +47,34 @@ public class SalesService {
         return new SaleDto(saleRepository.save(sale));
     }
 
-    public List<SaleDto> getAllSales() {
-        List<SaleDto> saleDtoList = new ArrayList<>();
-        for (Sale sale : saleRepository.findAll()) {
-            saleDtoList.add(new SaleDto(sale));
+    public Page<SaleDto> getAllSalesByPagination(Integer page, Integer row, String sort, String sortDirectionRequest, Long filterProductId, Long filterCampaignId, Float minPrice, Float maxPrice) {
+        Sort.Direction sortDirection = (sortDirectionRequest.equalsIgnoreCase("ASC")) ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+        PageRequest pageRequest = PageRequest.of(page, row, Sort.by(sortDirection, sort));
+
+        if (maxPrice == null || maxPrice < 0) maxPrice = Float.MAX_VALUE;
+        if (minPrice == null || minPrice < 0) minPrice = 0f;
+
+        if (filterProductId != null && filterCampaignId != null) {
+            Page<Sale> sales = saleRepository.findByCampaignIdAndProductIdAndTotalAmountBetween(filterCampaignId, filterProductId, minPrice, maxPrice, pageRequest);
+            return sales.map(SaleDto::new);
         }
-        return saleDtoList;
+        if (filterProductId != null) {
+            Set<SaleProduct> saleProducts = saleProductRepository.findAllByProductId(filterProductId);
+            Page<Sale> sales = saleRepository.findBySalesProductsInAndTotalAmountBetween(saleProducts, minPrice, maxPrice, pageRequest);
+            return sales.map(SaleDto::new);
+        }
+        if (filterCampaignId != null) {
+            Page<Sale> sales = saleRepository.findBySaleCampaignsInAndTotalAmountBetween(saleCampaignRepository.findAllByCampaignId(filterCampaignId), minPrice, maxPrice, pageRequest);
+            return sales.map(SaleDto::new);
+        }
+
+        Page<Sale> sales = saleRepository.findAllByTotalAmountBetween(minPrice, maxPrice, pageRequest);
+        return sales.map(SaleDto::new);
     }
 
-    public SaleProductDto addSaleProduct(Long saleId, Long productId, SaleProductRequest saleProductRequest) {
+    public SaleProductDto addSaleProduct(Long saleId, Long productId, Float quantity) {
+        if (quantity == null || quantity <= 0) quantity = 1f;
         Sale sale = saleRepository.findById(saleId).orElseThrow(
                 () -> new SaleNotFoundException("There is no sale with id: " + saleId)
         );
@@ -61,11 +82,7 @@ public class SalesService {
         ProductDto productDto = productInterface.getProductById(productId);
         SaleProduct saleProduct = new SaleProduct();
         saleProduct.setProduct(new Product(productDto));
-        if (saleProductRequest.getQuantity() == null) {
-            saleProduct.setQuantity(1F);
-        } else {
-            saleProduct.setQuantity(saleProductRequest.getQuantity());
-        }
+        saleProduct.setQuantity(quantity);
         setSaleTotalAmount(sale, saleProduct);
         setSaleTotalTax(sale, saleProduct);
         saleProduct.setSale(sale);
@@ -73,11 +90,12 @@ public class SalesService {
         return new SaleProductDto(saleProductRepository.save(saleProduct));
     }
 
-    public SaleProductDto updateSaleProduct(Long saleProductId, SaleProductRequest saleProductRequest) {
+    public SaleProductDto updateSaleProduct(Long saleProductId, Float quantity) {
+        if (quantity == null || quantity <= 0) quantity = 1f;
         SaleProduct saleProduct = saleProductRepository.findById(saleProductId).orElseThrow(
                 () -> new SaleProductNotFoundException("There is no saleProduct with id: " + saleProductId)
         );
-        saleProduct.setQuantity(saleProductRequest.getQuantity());
+        saleProduct.setQuantity(quantity);
         setSaleTotalAmount(saleProduct.getSale());
         setSaleTotalTax(saleProduct.getSale());
         return new SaleProductDto(saleProductRepository.save(saleProduct));
@@ -163,39 +181,5 @@ public class SalesService {
         return new SaleDto(saleRepository.findById(id).orElseThrow(
                 () -> new SaleNotFoundException("There is no sale with id: " + id)
         ));
-    }
-
-    public void setSaleTotalAmount(Sale sale) {
-        float total = 0f;
-        for (SaleProduct saleProduct : sale.getSalesProducts()) {
-            total += saleProduct.getQuantity() * saleProduct.getProduct().getPrice();
-        }
-        sale.setTotalAmount(total);
-    }
-
-    public void setSaleTotalAmount(Sale sale, SaleProduct sP) {
-        float total = 0f;
-        for (SaleProduct saleProduct : sale.getSalesProducts()) {
-            total += saleProduct.getQuantity() * saleProduct.getProduct().getPrice();
-        }
-        total += sP.getQuantity() * sP.getProduct().getPrice();
-        sale.setTotalAmount(total);
-    }
-
-    public void setSaleTotalTax(Sale sale) {
-        float total = 0f;
-        for (SaleProduct saleProduct : sale.getSalesProducts()) {
-            total += saleProduct.getQuantity() * saleProduct.getProduct().getPrice() * saleProduct.getProduct().getTax() / 100;
-        }
-        sale.setTotalTax(total);
-    }
-
-    public void setSaleTotalTax(Sale sale, SaleProduct sP) {
-        float total = 0f;
-        for (SaleProduct saleProduct : sale.getSalesProducts()) {
-            total += saleProduct.getQuantity() * saleProduct.getProduct().getPrice() * saleProduct.getProduct().getTax() / 100;
-        }
-        total += sP.getQuantity() * sP.getProduct().getPrice() * sP.getProduct().getTax() / 100;
-        sale.setTotalTax(total);
     }
 }

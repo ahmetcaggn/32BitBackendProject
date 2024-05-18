@@ -1,8 +1,8 @@
-package com.toyota.Sales.dto;
+package com.toyota.report.dto;
 
-import com.toyota.Sales.entity.Sale;
-import com.toyota.Sales.entity.SaleCampaign;
-import com.toyota.Sales.entity.SaleProduct;
+import com.toyota.entity.Sale;
+import com.toyota.entity.SaleCampaign;
+import com.toyota.entity.SaleProduct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,12 +31,12 @@ public class SaleDto {
         this.totalAmount = sale.getTotalAmount();
         this.totalTax = sale.getTotalTax();
         this.localDateTime = sale.getDateTime();
-        for (SaleProduct saleProduct : sale.getSalesProducts()){
+        for (SaleProduct saleProduct : sale.getSalesProducts()) {
             this.saleProducts.add(new SaleProductDto(saleProduct));
         }
-        for (SaleCampaign saleCampaign : sale.getSaleCampaigns()){
+        for (SaleCampaign saleCampaign : sale.getSaleCampaigns()) {
             this.saleCampaigns.add(new CampaignDto(saleCampaign.getCampaign()));
-            this.discountAmount+=saleCampaign.getDiscountAmount();
+            this.discountAmount += saleCampaign.getDiscountAmount();
         }
         this.lastPrice = this.totalAmount - this.discountAmount;
     }

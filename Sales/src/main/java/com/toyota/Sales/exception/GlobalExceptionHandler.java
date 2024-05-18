@@ -1,9 +1,11 @@
 package com.toyota.Sales.exception;
 
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -39,6 +41,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleSaleProductNotFoundException(SaleProductNotFoundException exception) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
+                .body(exception.getMessage());
+    }
+
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<Object> handleInvalidPropertyReferenceException(PropertyReferenceException exception) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body("Invalid property reference: " + exception.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Object> HandleFeignClientResponseException(MethodArgumentTypeMismatchException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(exception.getMessage());
     }
 }

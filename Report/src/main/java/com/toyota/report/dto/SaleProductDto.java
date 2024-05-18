@@ -1,6 +1,6 @@
-package com.toyota.Sales.dto;
+package com.toyota.report.dto;
 
-import com.toyota.Sales.entity.SaleProduct;
+import com.toyota.entity.SaleProduct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

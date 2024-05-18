@@ -32,6 +32,10 @@ public class GatewayConfig {
                         .path("/role/**")
                         .uri("lb://USERMANAGEMENT")
                 )
+                .route(r-> r
+                        .path("/report/**")
+                        .uri("lb://REPORT")
+                )
                 .build();
     }
 }
