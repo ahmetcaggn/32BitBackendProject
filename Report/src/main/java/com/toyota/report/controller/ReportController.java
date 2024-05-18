@@ -19,7 +19,7 @@ public class ReportController {
 
     @GetMapping("/createPdf/{id}")
     public ResponseEntity<String> createPdf(@PathVariable("id") Long id) throws IOException {
-        reportService.createEmptyPdfBySaleId(id);
+        reportService.generateReceipt(id);
         return ResponseEntity.ok("pdf file is created successfully");
     }
 
