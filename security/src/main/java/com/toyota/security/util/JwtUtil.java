@@ -1,5 +1,7 @@
 package com.toyota.security.util;
 
+import com.toyota.entity.Employee;
+import com.toyota.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -10,9 +12,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class JwtUtil {
@@ -20,10 +20,12 @@ public class JwtUtil {
     @Value("${jwt.key}")
     private String SECRET_KEY;
 
+
     Long EXPIRATION_TIME = (long) 1000 * 60 * 60 * 24;
 
-    public String generateToken(String username) {
+    public String generateToken(String username, Set<Role> roleSet) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("roles",roleSet.toString());
         return Jwts.builder()
                 .claims(claims)
                 .subject(username)
@@ -38,7 +40,7 @@ public class JwtUtil {
         return new SecretKeySpec(keyBytes, "HmacSHA256");
     }
 
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith((SecretKey) getSignKey())
                 .build()
@@ -59,4 +61,8 @@ public class JwtUtil {
     public String extractUsername(String token) {
         return extractAllClaims(token).getSubject();
     }
+
+//    public List<Role> extractRoles(String token){
+//        return extractAllClaims(token).get("roles",List.class);
+//    }
 }

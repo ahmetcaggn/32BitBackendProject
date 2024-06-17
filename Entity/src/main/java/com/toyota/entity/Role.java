@@ -1,4 +1,4 @@
-package com.toyota.security.entity;
+package com.toyota.entity;
 
 public enum Role {
     CASHIER,

@@ -1,29 +1,40 @@
-package com.toyota.security.entity;
+package com.toyota.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
 
-@Entity
-@RequiredArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-public class Users implements UserDetails {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+public class Employee implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     private String name;
+    private String surname;
+    private String address;
+    private String phoneNo;
     private String username;
     private String password;
 
+    @Column(nullable = false,insertable = false)
+    @ColumnDefault("false")
+    private Boolean isDeleted;
+
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
-    Set<Role> roles = new HashSet<>();
+    Set<Role> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -60,3 +71,5 @@ public class Users implements UserDetails {
         return true;
     }
 }
+
+

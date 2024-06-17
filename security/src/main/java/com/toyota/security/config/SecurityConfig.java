@@ -12,9 +12,11 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.client.RestTemplate;
 
 
 @Configuration
@@ -26,16 +28,28 @@ public class SecurityConfig {
     private final PasswordEncoder passwordEncoder;
 
     @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
+
         return http
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-
-                        .requestMatchers("/api/addNewUser/**", "api/generateToken/**").permitAll()
-                        .requestMatchers("/api/manager/**").hasAnyRole("MANAGER")
-                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN")
-                        .requestMatchers("/api/cashier/**").hasAnyRole("CASHIER")
+                        .requestMatchers("/security/generateToken","/security/validateToken").permitAll()
+//                        .requestMatchers("employee/**","/security/deneme/**").permitAll()
+                        .requestMatchers("/security/manager/**").hasAnyRole("MANAGER","ADMIN")
+                        .requestMatchers("/security/admin/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/security/cashier/**").hasAnyRole("CASHIER","ADMIN")
+                        .requestMatchers("/security/sales/**").hasAnyRole("CASHIER","ADMIN")
+                        .requestMatchers("/security/campaigns/**").hasAnyRole("CASHIER","ADMIN")
+                        .requestMatchers("/security/product/**").hasAnyRole("CASHIER","ADMIN")
+                        .requestMatchers("/security/employee/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/security/role/**").hasAnyRole("CASHIER","ADMIN")
+                        .requestMatchers("/security/report/**").hasAnyRole("CASHIER","ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(x -> x.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

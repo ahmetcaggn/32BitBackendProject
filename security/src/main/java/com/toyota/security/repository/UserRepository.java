@@ -1,10 +1,12 @@
 package com.toyota.security.repository;
 
-import com.toyota.security.entity.Users;
+import com.toyota.entity.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<Users, Long> {
-    Optional<Users> findByUsername(String username);
+@Repository
+public interface UserRepository extends JpaRepository<Employee,Long> {
+    Optional<Employee> findByUsername(String username);
 }

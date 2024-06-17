@@ -1,6 +1,6 @@
-package com.toyota.security.dto;
+package com.toyota.UserManagement.dto;
 
-import com.toyota.security.entity.Role;
+import com.toyota.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +14,9 @@ import java.util.Set;
 @NoArgsConstructor
 public class CreateUserRequest {
     private String name;
+    private String surname;
+    private String address;
+    private String phoneNo;
     private String username;
     private String password;
     private Set<Role> roles;
