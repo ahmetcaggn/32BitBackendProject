@@ -16,21 +16,16 @@ public class SecurityService {
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
 
-//    public Boolean validateToken(TokenValidateDto tokenValidateDto){
-//        String username = jwtUtil.extractUsername(tokenValidateDto.getToken());
-//        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-//        return jwtUtil.validateToken(tokenValidateDto.getToken(),userDetails);
-//    }
-    public Boolean validateToken(String token){
-        String username = jwtUtil.extractUsername(token);
+    public Boolean validateToken(TokenValidateDto token) {
+        String username = jwtUtil.extractUsername(token.getToken());
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return jwtUtil.validateToken(token,userDetails);
+        return jwtUtil.validateToken(token.getToken(), userDetails);
     }
 
-    public String generateToken(String username){
+    public String generateToken(String username) {
         Employee employee = (Employee) userDetailsService.loadUserByUsername(username);
         Set<Role> roles = employee.getRoles();
-        return jwtUtil.generateToken(username,roles);
+        return jwtUtil.generateToken(username, roles);
     }
 
 }

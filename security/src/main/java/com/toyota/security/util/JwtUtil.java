@@ -1,6 +1,5 @@
 package com.toyota.security.util;
 
-import com.toyota.entity.Employee;
 import com.toyota.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -25,7 +24,7 @@ public class JwtUtil {
 
     public String generateToken(String username, Set<Role> roleSet) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles",roleSet.toString());
+        claims.put("roles", roleSet.toString());
         return Jwts.builder()
                 .claims(claims)
                 .subject(username)

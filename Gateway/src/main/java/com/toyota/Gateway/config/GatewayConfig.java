@@ -31,16 +31,11 @@ public class GatewayConfig {
                 )
                 .route(r -> r
                         .path("/product/**")
-                        .filters(f -> f.filter(authFilter.apply(new CustomAuthFilter.Config())))
+//                        .filters(f -> f.filter(authFilter.apply(new CustomAuthFilter.Config())))
                         .uri("lb://PRODUCT")
                 )
                 .route(r-> r
                         .path("/employee/**")
-//                        .filters(f -> f.filter(customAuthFilter.apply(new CustomAuthFilter.Config())))
-                        .uri("lb://USERMANAGEMENT")
-                )
-                .route(r-> r
-                        .path("/role/**")
                         .filters(f -> f.filter(authFilter.apply(new CustomAuthFilter.Config())))
                         .uri("lb://USERMANAGEMENT")
                 )

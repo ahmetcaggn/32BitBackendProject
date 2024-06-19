@@ -1,6 +1,8 @@
 package com.toyota.security.config;
 
 import com.toyota.security.filter.JwtAuthFilter;
+import com.toyota.security.security.CustomAccessDeniedHandler;
+import com.toyota.security.security.CustomAuthenticationEntryPoint;
 import com.toyota.security.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -12,20 +14,22 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.client.RestTemplate;
 
 
+
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CustomUserDetailsService userService;
+    private final CustomUserDetailsService customUserDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
     private final PasswordEncoder passwordEncoder;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public RestTemplate restTemplate() {
@@ -38,18 +42,17 @@ public class SecurityConfig {
 
         return http
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(x -> {
+                    x.authenticationEntryPoint(customAuthenticationEntryPoint);
+                    x.accessDeniedHandler(customAccessDeniedHandler);
+                })
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/security/generateToken","/security/validateToken").permitAll()
-//                        .requestMatchers("employee/**","/security/deneme/**").permitAll()
-                        .requestMatchers("/security/manager/**").hasAnyRole("MANAGER","ADMIN")
-                        .requestMatchers("/security/admin/**").hasAnyRole("ADMIN")
-                        .requestMatchers("/security/cashier/**").hasAnyRole("CASHIER","ADMIN")
-                        .requestMatchers("/security/sales/**").hasAnyRole("CASHIER","ADMIN")
-                        .requestMatchers("/security/campaigns/**").hasAnyRole("CASHIER","ADMIN")
-                        .requestMatchers("/security/product/**").hasAnyRole("CASHIER","ADMIN")
-                        .requestMatchers("/security/employee/**").hasAnyRole("ADMIN")
-                        .requestMatchers("/security/role/**").hasAnyRole("CASHIER","ADMIN")
-                        .requestMatchers("/security/report/**").hasAnyRole("CASHIER","ADMIN")
+                        .requestMatchers("/security/generateToken", "/security/validateToken").permitAll()
+                        .requestMatchers("/security/product/**").permitAll()
+                        .requestMatchers("/security/employee/**").hasRole("ADMIN")
+                        .requestMatchers("/security/sales/**").hasAnyRole("CASHIER", "ADMIN")
+                        .requestMatchers("/security/campaigns/**").hasAnyRole("CASHIER", "ADMIN")
+                        .requestMatchers("/security/report/**").hasAnyRole("MANAGER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(x -> x.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -60,7 +63,7 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userService);
+        authenticationProvider.setUserDetailsService(customUserDetailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder);
         return authenticationProvider;
     }
