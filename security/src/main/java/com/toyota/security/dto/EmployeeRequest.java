@@ -1,4 +1,4 @@
-package com.toyota.UserManagement.dto;
+package com.toyota.security.dto;
 
 import com.toyota.entity.Role;
 import lombok.AllArgsConstructor;

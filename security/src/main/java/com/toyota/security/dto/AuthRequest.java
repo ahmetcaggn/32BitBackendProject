@@ -1,4 +1,4 @@
-package com.toyota.UserManagement.dto;
+package com.toyota.security.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +8,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Setter 
-public class RoleRequest {
-    public String name;
+@Setter
+public class AuthRequest {
+    String username;
+    String password;
 }

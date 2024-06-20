@@ -8,16 +8,16 @@ import lombok.Setter;
 
 import java.util.Set;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-public class EmployeeRequest {
+@AllArgsConstructor
+@NoArgsConstructor
+public class CreateUserRequest {
     private String name;
     private String surname;
-    private String username;
-    private String password;
     private String address;
     private String phoneNo;
+    private String username;
+    private String password;
     private Set<Role> roles;
 }
