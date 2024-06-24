@@ -35,7 +35,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .password(employeeDto.getPassword())
                     .build();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new UsernameNotFoundException(String.format("User not found with username: %s",username));
         }
 
     }

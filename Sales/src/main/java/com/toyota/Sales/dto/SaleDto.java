@@ -3,10 +3,7 @@ package com.toyota.Sales.dto;
 import com.toyota.Sales.entity.Sale;
 import com.toyota.Sales.entity.SaleCampaign;
 import com.toyota.Sales.entity.SaleProduct;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -16,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class SaleDto {
     private Long id;
     private float totalAmount;
