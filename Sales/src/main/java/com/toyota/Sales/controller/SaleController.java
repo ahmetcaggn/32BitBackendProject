@@ -5,6 +5,7 @@ import com.toyota.Sales.dto.SaleDto;
 import com.toyota.Sales.service.CampaignService;
 import com.toyota.Sales.service.SalesService;
 import com.toyota.Sales.dto.SaleProductDto;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/sales")
+@Log4j2
 public class SaleController {
 
     SalesService salesService;
@@ -60,19 +62,17 @@ public class SaleController {
     }
 
     @PostMapping("/{saleId}/campaigns/{campaignId}")
-    public SaleDto applyCampaignToSale(@PathVariable("saleId") Long saleId, @PathVariable("campaignId") Long campaignID) {
-        return salesService.applyCampaignToSale(saleId, campaignID);
+    public SaleDto applyCampaignToSale(@PathVariable("saleId") Long saleId, @PathVariable("campaignId") Long campaignId) {
+        return salesService.applyCampaignToSale(saleId, campaignId);
     }
 
     //Put Requests
-
     @PutMapping("/saleProduct/{saleProductId}")
     public SaleProductDto updateQuantityOfSaleProduct(@PathVariable("saleProductId") Long saleProductId, @RequestParam(defaultValue = "1") Float quantity) {
         return salesService.updateSaleProduct(saleProductId, quantity);
     }
 
     //Delete Requests
-
     @DeleteMapping("/saleProduct/{saleProductId}")
     public ResponseEntity<String> deleteSaleProduct(@PathVariable("saleProductId") Long saleProductId) {
         salesService.deleteSaleProduct(saleProductId);

@@ -10,6 +10,7 @@ import com.toyota.Sales.repository.CampaignRepository;
 import com.toyota.Sales.repository.SaleCampaignRepository;
 import com.toyota.Sales.repository.SaleProductRepository;
 import com.toyota.Sales.repository.SaleRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ import static com.toyota.Sales.util.SaleUtility.setSaleTotalAmount;
 import static com.toyota.Sales.util.SaleUtility.setSaleTotalTax;
 
 @Service
+@Log4j2
 public class SalesService {
 
     private final ProductInterface productInterface;
@@ -44,7 +46,9 @@ public class SalesService {
         sale.setTotalAmount(0);
         sale.setTotalTax(0);
         sale.setDateTime(LocalDateTime.now());
-        return new SaleDto(saleRepository.save(sale));
+        SaleDto saleDto = new SaleDto(saleRepository.save(sale));
+        log.info("Sale is created: {}", saleDto.toString());
+        return saleDto;
     }
 
     public Page<SaleDto> getAllSalesByPagination(Integer page, Integer row, String sort, String sortDirectionRequest, Long filterProductId, Long filterCampaignId, Float minPrice, Float maxPrice) {
@@ -70,6 +74,7 @@ public class SalesService {
         }
 
         Page<Sale> sales = saleRepository.findAllByTotalAmountBetween(minPrice, maxPrice, pageRequest);
+        log.info("{} sales fetched", sales.getSize());
         return sales.map(SaleDto::new);
     }
 
@@ -86,7 +91,7 @@ public class SalesService {
         setSaleTotalAmount(sale, saleProduct);
         setSaleTotalTax(sale, saleProduct);
         saleProduct.setSale(sale);
-
+        log.info("{} Product with id {} added to Sale with id {}", quantity, productId, saleId);
         return new SaleProductDto(saleProductRepository.save(saleProduct));
     }
 
@@ -98,6 +103,7 @@ public class SalesService {
         saleProduct.setQuantity(quantity);
         setSaleTotalAmount(saleProduct.getSale());
         setSaleTotalTax(saleProduct.getSale());
+        log.info("Quantity of SaleProduct with id {} updated to {}", saleProductId, quantity);
         return new SaleProductDto(saleProductRepository.save(saleProduct));
     }
 
@@ -106,6 +112,7 @@ public class SalesService {
                 () -> new SaleProductNotFoundException("There is no saleProduct with id: " + saleProductId + " to delete")
         );
         saleProductRepository.delete(saleProduct);
+        log.info("SaleProduct deleted successfully with id: {}", saleProductId);
         setSaleTotalTax(saleProduct.getSale());
         setSaleTotalAmount(saleProduct.getSale());
         saleRepository.save(saleProduct.getSale());
@@ -130,6 +137,7 @@ public class SalesService {
         SaleDto saleDto = new SaleDto(sale);
         saleDto.setDiscountAmount(discountAmount);
         saleDto.setLastPrice(saleDto.getTotalAmount() - saleDto.getDiscountAmount());
+        log.info("Campaign with id {} added to Sale with id {}", campaignId, saleId);
         return saleDto;
     }
 
@@ -149,6 +157,7 @@ public class SalesService {
         for (Campaign campaign : campaigns) {
             campaignDtoList.add(new CampaignDto(campaign));
         }
+        log.info("{} campaigns fetched", campaignDtoList.size());
         return campaignDtoList;
     }
 
@@ -178,8 +187,10 @@ public class SalesService {
     }
 
     public SaleDto getSaleById(Long id) {
-        return new SaleDto(saleRepository.findById(id).orElseThrow(
+        SaleDto saleDto = new SaleDto(saleRepository.findById(id).orElseThrow(
                 () -> new SaleNotFoundException("There is no sale with id: " + id)
         ));
+        log.info("Sale with id {} fetched", id);
+        return saleDto;
     }
 }

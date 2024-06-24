@@ -1,22 +1,17 @@
 package com.toyota.report.service;
 
 import com.toyota.report.dto.SaleDto;
-import com.toyota.report.dto.SaleProductDto;
 import com.toyota.report.interfaces.SaleInterface;
 import com.toyota.report.util.ReceiptGenerator;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
 
 
 @Service
+@Log4j2
 public class ReportService {
 
     private final SaleInterface saleInterface;
@@ -29,13 +24,19 @@ public class ReportService {
     }
 
     public SaleDto getSaleById(Long id) {
-        return saleInterface.getSaleById(id).getBody();
+        SaleDto saleDto = saleInterface.getSaleById(id).getBody();
+        log.info("Sale with id {} fetched", id);
+        return saleDto;
     }
 
     public Page<SaleDto> getAllSalesByPage(Integer page, Integer rows, String sort, Long filterProductId, Long filterCampaignId, Float minPrice, Float maxPrice, String sortDirection) {
-        return saleInterface.getAllSaleByPagination(page, rows, sort, filterProductId, filterCampaignId, minPrice, maxPrice, sortDirection).getBody();
+        Page<SaleDto> saleDtoPage = saleInterface.getAllSaleByPagination(page, rows, sort, filterProductId, filterCampaignId, minPrice, maxPrice, sortDirection).getBody();
+        log.info("{} sales fetched", saleDtoPage != null ? saleDtoPage.getTotalElements() : 0);
+        return saleDtoPage;
     }
-    public void generateReceipt(Long saleId) throws IOException {
+
+    public void generateReceipt(Long saleId) {
         receiptGenerator.generateReceipt(saleId);
+        log.info("Receipt generated for sale with id {}", saleId);
     }
 }
