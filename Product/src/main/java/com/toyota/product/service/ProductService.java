@@ -1,7 +1,7 @@
 package com.toyota.product.service;
 
+import com.toyota.entity.Product;
 import com.toyota.product.dto.ProductDto;
-import com.toyota.product.entity.Product;
 import com.toyota.product.exception.ProductNotFoundException;
 import com.toyota.product.repository.ProductRepository;
 import lombok.extern.log4j.Log4j2;
