@@ -1,6 +1,6 @@
 package com.toyota.product.dto;
 
-import com.toyota.product.entity.Product;
+import com.toyota.entity.Product;
 import lombok.*;
 
 @AllArgsConstructor
