@@ -1,8 +1,8 @@
 package com.toyota.Sales.repository;
 
-import com.toyota.Sales.entity.Sale;
-import com.toyota.Sales.entity.SaleCampaign;
-import com.toyota.Sales.entity.SaleProduct;
+import com.toyota.entity.Sale;
+import com.toyota.entity.SaleCampaign;
+import com.toyota.entity.SaleProduct;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

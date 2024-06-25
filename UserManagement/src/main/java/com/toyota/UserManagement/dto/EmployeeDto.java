@@ -2,10 +2,7 @@ package com.toyota.UserManagement.dto;
 
 import com.toyota.entity.Employee;
 import com.toyota.entity.Role;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Set;
 
@@ -14,6 +11,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 public class EmployeeDto {
     private Long id;
     private String name;

@@ -1,7 +1,6 @@
 package com.toyota.Sales.service;
 
 import com.toyota.Sales.dto.*;
-import com.toyota.Sales.entity.*;
 import com.toyota.Sales.interfaces.ProductInterface;
 import com.toyota.Sales.exception.CampaignNotFoundException;
 import com.toyota.Sales.exception.SaleNotFoundException;
@@ -10,6 +9,8 @@ import com.toyota.Sales.repository.CampaignRepository;
 import com.toyota.Sales.repository.SaleCampaignRepository;
 import com.toyota.Sales.repository.SaleProductRepository;
 import com.toyota.Sales.repository.SaleRepository;
+import com.toyota.entity.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -21,9 +22,11 @@ import java.util.Set;
 
 import static com.toyota.Sales.util.SaleUtility.setSaleTotalAmount;
 import static com.toyota.Sales.util.SaleUtility.setSaleTotalTax;
+import static com.toyota.Sales.util.DtoEntityMapper.mapDtoToProduct;
 
 @Service
 @Log4j2
+@RequiredArgsConstructor
 public class SalesService {
 
     private final ProductInterface productInterface;
@@ -31,15 +34,6 @@ public class SalesService {
     private final SaleProductRepository saleProductRepository;
     private final CampaignRepository campaignRepository;
     private final SaleCampaignRepository saleCampaignRepository;
-
-
-    public SalesService(SaleRepository saleRepository, SaleProductRepository saleProductRepository, CampaignRepository campaignRepository, SaleCampaignRepository saleCampaignRepository, ProductInterface productInterface) {
-        this.saleRepository = saleRepository;
-        this.saleProductRepository = saleProductRepository;
-        this.campaignRepository = campaignRepository;
-        this.saleCampaignRepository = saleCampaignRepository;
-        this.productInterface = productInterface;
-    }
 
     public SaleDto createSale() {
         Sale sale = new Sale();
@@ -86,7 +80,7 @@ public class SalesService {
 
         ProductDto productDto = productInterface.getProductById(productId);
         SaleProduct saleProduct = new SaleProduct();
-        saleProduct.setProduct(new Product(productDto));
+        saleProduct.setProduct(mapDtoToProduct(productDto));
         saleProduct.setQuantity(quantity);
         setSaleTotalAmount(sale, saleProduct);
         setSaleTotalTax(sale, saleProduct);

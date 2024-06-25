@@ -1,15 +1,13 @@
 package com.toyota.Sales.dto;
 
-import com.toyota.Sales.entity.SaleProduct;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.toyota.entity.SaleProduct;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 public class SaleProductDto {
     private Long id;
     private Float quantity;

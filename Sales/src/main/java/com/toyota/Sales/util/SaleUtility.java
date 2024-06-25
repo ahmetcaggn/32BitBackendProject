@@ -1,7 +1,7 @@
 package com.toyota.Sales.util;
 
-import com.toyota.Sales.entity.Sale;
-import com.toyota.Sales.entity.SaleProduct;
+import com.toyota.entity.Sale;
+import com.toyota.entity.SaleProduct;
 
 public final class SaleUtility {
 

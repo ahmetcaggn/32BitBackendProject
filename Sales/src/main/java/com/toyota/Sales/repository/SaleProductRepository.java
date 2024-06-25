@@ -1,6 +1,6 @@
 package com.toyota.Sales.repository;
 
-import com.toyota.Sales.entity.SaleProduct;
+import com.toyota.entity.SaleProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

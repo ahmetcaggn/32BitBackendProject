@@ -1,8 +1,8 @@
 package com.toyota.Sales.dto;
 
-import com.toyota.Sales.entity.Sale;
-import com.toyota.Sales.entity.SaleCampaign;
-import com.toyota.Sales.entity.SaleProduct;
+import com.toyota.entity.Sale;
+import com.toyota.entity.SaleCampaign;
+import com.toyota.entity.SaleProduct;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@EqualsAndHashCode
 public class SaleDto {
     private Long id;
     private float totalAmount;
