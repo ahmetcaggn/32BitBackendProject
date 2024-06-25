@@ -1,11 +1,8 @@
 package com.toyota.Sales.dto;
 
-import com.toyota.Sales.entity.Campaign;
-import com.toyota.Sales.entity.Product;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.toyota.entity.Campaign;
+import com.toyota.entity.Product;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,6 +11,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 public class CampaignDto {
     private Long id;
     private String name;

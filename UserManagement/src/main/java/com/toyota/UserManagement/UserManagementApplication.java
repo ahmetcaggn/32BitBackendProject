@@ -8,7 +8,6 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
-//@SpringBootApplication
 @EnableDiscoveryClient
 //@EnableJpaRepositories(basePackages = "com.toyota.entity")
 @EntityScan("com.toyota.entity")

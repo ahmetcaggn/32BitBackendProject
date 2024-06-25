@@ -1,15 +1,14 @@
 package com.toyota.product.dto;
 
 import com.toyota.product.entity.Product;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
+@EqualsAndHashCode
 public class ProductDto {
     private Long id;
     private Long productCode;

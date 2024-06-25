@@ -1,5 +1,6 @@
 package com.toyota.UserManagement.service;
 
+import com.toyota.UserManagement.Exception.EmployeeNotFoundException;
 import com.toyota.UserManagement.dto.CreateUserRequest;
 import com.toyota.UserManagement.dto.EmployeeDto;
 import com.toyota.UserManagement.repository.EmployeeRepository;
@@ -34,14 +35,18 @@ public class UserManagementService {
         return employeeDtoList;
     }
 
-    public EmployeeDto getEmployeeByUsername(String username) throws Exception {
-        Employee employee = employeeRepository.findByUsername(username).orElseThrow(Exception::new);
+    public EmployeeDto getEmployeeByUsername(String username)  {
+        Employee employee = employeeRepository.findByUsername(username).orElseThrow(
+                ()-> new EmployeeNotFoundException("There is no employee with username: " + username)
+        );
         log.info("Employee with username {} fetched", username);
         return new EmployeeDto(employee);
     }
 
     public EmployeeDto updateEmployeeById(Long id, EmployeeRequest er) {
-        Employee employee = employeeRepository.findByIsDeletedFalseAndId(id);
+        Employee employee = employeeRepository.findByIsDeletedFalseAndId(id).orElseThrow(
+                ()-> new EmployeeNotFoundException("There is no employee with id: " + id)
+        );
         employee.setName(er.getName());
         employee.setSurname(er.getSurname());
         employee.setAddress(er.getAddress());
@@ -70,7 +75,9 @@ public class UserManagementService {
     }
 
     public Boolean deleteEmployeeById(Long id) {
-        Employee employee = employeeRepository.findByIsDeletedFalseAndId(id);
+        Employee employee = employeeRepository.findByIsDeletedFalseAndId(id).orElseThrow(
+                ()-> new EmployeeNotFoundException("There is no employee with id: " + id)
+        );
         employee.setIsDeleted(true);
         employeeRepository.save(employee);
         log.info("Employee with id {} deleted", id);

@@ -3,12 +3,12 @@ package com.toyota.Sales.service;
 import com.toyota.Sales.dto.CampaignDto;
 import com.toyota.Sales.dto.CampaignRequest;
 import com.toyota.Sales.dto.ProductDto;
-import com.toyota.Sales.entity.Campaign;
-import com.toyota.Sales.entity.Product;
 import com.toyota.Sales.exception.CampaignNotFoundException;
 import com.toyota.Sales.exception.ProductNotFoundException;
 import com.toyota.Sales.interfaces.ProductInterface;
 import com.toyota.Sales.repository.CampaignRepository;
+import com.toyota.entity.Campaign;
+import com.toyota.entity.Product;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import static com.toyota.Sales.util.DtoEntityMapper.mapDtoToProduct;
 @Service
 @Log4j2
 public class CampaignService {
@@ -56,7 +56,7 @@ public class CampaignService {
             ProductDto productDto = productInterface.getProductById(id);
 
             if (productDto != null) {
-                products.add(new Product(productDto));
+                products.add(mapDtoToProduct(productDto));
             } else {
                 throw new ProductNotFoundException("There is no product with id: " + id);
             }

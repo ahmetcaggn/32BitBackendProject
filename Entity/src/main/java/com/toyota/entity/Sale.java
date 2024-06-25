@@ -20,18 +20,18 @@ public class Sale {
     @Id
     @SequenceGenerator(name = "sale_generator",allocationSize = 1)
     @GeneratedValue(generator = "sale_generator",strategy = GenerationType.SEQUENCE)
-    protected Long id;
-    protected float totalAmount;
-    protected float totalTax;
-    protected LocalDateTime dateTime;
+    private Long id;
+    private float totalAmount;
+    private float totalTax;
+    private LocalDateTime dateTime;
 
 
     @JsonManagedReference
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)
-    protected Set<SaleProduct> salesProducts = new HashSet<>();
+    private Set<SaleProduct> salesProducts = new HashSet<>();
 
 
     @JsonManagedReference
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)
-    protected Set<SaleCampaign> saleCampaigns = new HashSet<>();
+    private Set<SaleCampaign> saleCampaigns = new HashSet<>();
 }
