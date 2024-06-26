@@ -3,8 +3,9 @@ package com.toyota.Gateway.filter;
 import com.toyota.Gateway.dto.TokenValidateDto;
 import com.toyota.Gateway.exception.CustomForbiddenException;
 import com.toyota.Gateway.exception.InvalidJwtTokenException;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
-import org.springframework.cloud.gateway.filter.OrderedGatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,14 +21,17 @@ public class CustomAuthFilter extends AbstractGatewayFilterFactory<CustomAuthFil
 
     private final RestTemplate restTemplate;
 
-    public CustomAuthFilter(RestTemplate restTemplate) {
+    private final DiscoveryClient discoveryClient;
+
+    public CustomAuthFilter(RestTemplate restTemplate, DiscoveryClient discoveryClient) {
         super(Config.class);
         this.restTemplate = restTemplate;
+        this.discoveryClient = discoveryClient;
     }
 
     @Override
     public GatewayFilter apply(Config config) {
-        return new OrderedGatewayFilter((exchange, chain) -> {
+        return (exchange, chain) -> {
             if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
                 throw new InvalidJwtTokenException("No authorization header");
             }
@@ -37,16 +41,17 @@ public class CustomAuthFilter extends AbstractGatewayFilterFactory<CustomAuthFil
             if (!authHeader.startsWith("Bearer ")) {
                 throw new InvalidJwtTokenException("Authorization header must start with Bearer");
             }
-
-
+            // Security Service instance
+            ServiceInstance serviceInstance = discoveryClient.getInstances("SECURITY").get(0);
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.set("Authorization", authHeader);
             String token = authHeader.substring(7);
-            HttpEntity<TokenValidateDto> httpRequest = new HttpEntity<>(new TokenValidateDto(token),httpHeaders);
-            String urlValidate = "http://localhost:8400/security/validateToken";
+            HttpEntity<TokenValidateDto> httpRequest = new HttpEntity<>(new TokenValidateDto(token), httpHeaders);
+            String urlValidate = serviceInstance.getUri() + "/security/validateToken";
+
 
             try {
-                restTemplate.exchange(urlValidate,HttpMethod.POST, httpRequest, Boolean.class);
+                restTemplate.exchange(urlValidate, HttpMethod.POST, httpRequest, Boolean.class);
             } catch (Exception e) {
                 throw new InvalidJwtTokenException("Invalid JWT token");
             }
@@ -54,7 +59,8 @@ public class CustomAuthFilter extends AbstractGatewayFilterFactory<CustomAuthFil
             String path = exchange.getRequest().getPath().value();
             String serviceDeterminer = path.split("/")[1];
             HttpEntity<Boolean> httpRequestGet = new HttpEntity<>(httpHeaders);
-            String url = "http://localhost:8400/security/" + serviceDeterminer;
+            String url = serviceInstance.getUri() + "/security/" + serviceDeterminer;
+
 
             try {
                 restTemplate.exchange(url, HttpMethod.GET, httpRequestGet, Boolean.class);
@@ -62,9 +68,8 @@ public class CustomAuthFilter extends AbstractGatewayFilterFactory<CustomAuthFil
             } catch (Exception e) {
                 throw new CustomForbiddenException("Access denied!");
             }
-        }, 1);
+        };
     }
-
 
     public static class Config {
     }

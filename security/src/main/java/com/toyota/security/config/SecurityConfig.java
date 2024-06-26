@@ -47,8 +47,7 @@ public class SecurityConfig {
                     x.accessDeniedHandler(customAccessDeniedHandler);
                 })
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/security/generateToken", "/security/validateToken").permitAll()
-                        .requestMatchers("/security/product/**").permitAll()
+                        .requestMatchers("/security/generateToken", "/security/validateToken","/security/product/**").permitAll()
                         .requestMatchers("/security/employee/**").hasRole("ADMIN")
                         .requestMatchers("/security/sales/**").hasAnyRole("CASHIER", "ADMIN")
                         .requestMatchers("/security/campaigns/**").hasAnyRole("CASHIER", "ADMIN")

@@ -10,25 +10,25 @@ import org.springframework.web.client.HttpClientErrorException;
 @ControllerAdvice
 @Log4j2
 public class GlobalExceptionHandler {
-    @ExceptionHandler(HttpClientErrorException.class)
-    public ResponseEntity<Object> handleHttpClientErrorException(HttpClientErrorException exception) {
-        if (exception.getStatusCode().equals(HttpStatus.FORBIDDEN)) {
-            log.error(exception.getMessage(), exception);
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body(exception.getMessage());
-        }
-        if (exception.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
-            log.error(exception.getMessage(), exception);
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(exception.getMessage());
-        }
-        log.error(exception.getMessage(), exception);
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Unknown Server Error");
-    }
+//    @ExceptionHandler(HttpClientErrorException.class)
+//    public ResponseEntity<Object> handleHttpClientErrorException(HttpClientErrorException exception) {
+//        if (exception.getStatusCode().equals(HttpStatus.FORBIDDEN)) {
+//            log.error(exception.getMessage(), exception);
+//            return ResponseEntity
+//                    .status(HttpStatus.FORBIDDEN)
+//                    .body(exception.getMessage());
+//        }
+//        if (exception.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
+//            log.error(exception.getMessage(), exception);
+//            return ResponseEntity
+//                    .status(HttpStatus.UNAUTHORIZED)
+//                    .body(exception.getMessage());
+//        }
+//        log.error(exception.getMessage(), exception);
+//        return ResponseEntity
+//                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .body("Unknown Server Error");
+//    }
 
     @ExceptionHandler(InvalidJwtTokenException.class)
     public ResponseEntity<Object> handleInvalidJwtTokenException(InvalidJwtTokenException exception){
