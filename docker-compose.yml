@@ -6,10 +6,10 @@ services:
       context: ./eureka
       dockerfile: Dockerfile
     container_name: eureka
-#    expose:
-#      - 8761
-    ports:
-      - "8761:8761"
+    expose:
+      - 8761
+#    ports:
+#      - "8761:8761"
     environment:
       - EUREKA_CLIENT_FETCH_REGISTRY=false
       - EUREKA_CLIENT_REGISTER_WITH_EUREKA=false
@@ -42,10 +42,10 @@ services:
     image: 'postgres:13.1-alpine'
     container_name: db
     hostname: db
-#    expose:
-#      - 5432
-    ports:
-      - "5432:5432"
+    expose:
+      - 5432
+#    ports:
+#      - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=1234
@@ -62,10 +62,10 @@ services:
       context: ./UserManagement
       dockerfile: Dockerfile
     container_name: user-management
-#    expose:
-#      - 8200
-    ports:
-      - "8200:8200"
+    expose:
+      - 8200
+#    ports:
+#      - "8200:8200"
     depends_on:
       - db
       - eureka
@@ -87,10 +87,10 @@ services:
       context: ./security
       dockerfile: Dockerfile
     container_name: security
-#    expose:
-#      - 8400
-    ports:
-      - "8400:8400"
+    expose:
+      - 8400
+#    ports:
+#      - "8400:8400"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/SpringExample
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -111,10 +111,10 @@ services:
       context: ./Sales
       dockerfile: Dockerfile
     container_name: sales
-#    expose:
-#      - 8100
-    ports:
-      - "8100:8100"
+    expose:
+      - 8100
+#    ports:
+#      - "8100:8100"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/SpringExample
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -135,10 +135,10 @@ services:
       context: ./Report
       dockerfile: Dockerfile
     container_name: report
-#    expose:
-#      - 8300
-    ports:
-      - "8300:8300"
+    expose:
+      - 8300
+#    ports:
+#      - "8300:8300"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/SpringExample
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -159,10 +159,10 @@ services:
       context: ./Product
       dockerfile: Dockerfile
     container_name: product
-    ports:
-      - "8000:8000"
-#    expose:
-#      - 8000
+#    ports:
+#      - "8000:8000"
+    expose:
+      - 8000
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/SpringExample
       - SPRING_DATASOURCE_USERNAME=postgres
