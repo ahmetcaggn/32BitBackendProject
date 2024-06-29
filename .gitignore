@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Receipts ###
+Receipts/*.pdf
+
+### Logs ###
+Logs/**/*.log

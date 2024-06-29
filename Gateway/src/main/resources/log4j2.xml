@@ -7,7 +7,7 @@
             %d{yyyy-MM-dd HH:mm:ss.SSS} %5p [%-16.16t] %-40.40c{1.} - %msg %n
         </Property>
         <Property name="LOG_DIR">
-            /home/ubuntu/Desktop/logs/gateway/
+            /app/logs/
         </Property>
         <Property name="FILE_SIZE_ROOT">10MB</Property>
         <Property name="FILE_SIZE_TRACE">5MB</Property>
