@@ -44,4 +44,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.FORBIDDEN)
                 .body(exception.getMessage());
     }
+    @ExceptionHandler(NoSuchServiceException.class)
+    public ResponseEntity<Object> handleNoSuchServiceException(NoSuchServiceException exception){
+        log.error(exception.getMessage(), exception);
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(exception.getMessage());
+    }
 }
