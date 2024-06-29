@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import static com.toyota.report.util.DirectoryUtil.getFontNameFromDirectory;
 
 @Component
 public class ReceiptGenerator {
@@ -52,7 +53,7 @@ public class ReceiptGenerator {
             document.addPage(page);
             PDPageContentStream contentStream = new PDPageContentStream(document, page);
             contentStream.beginText();
-            font = PDType0Font.load(document, new File(String.format("%s%s", "Report/src/main/java/com/toyota/report/font/", "OpenSans-VariableFont.ttf")));
+            font = PDType0Font.load(document, new File(String.format("%s%s", "/app/fonts/", getFontNameFromDirectory("/app/fonts/"))));
             contentStream.setFont(font, fontSize);
             contentStream.newLineAtOffset(offsetX, height - offsetY);
             contentStream.setLeading(fontLeading);
@@ -118,11 +119,11 @@ public class ReceiptGenerator {
             writeReverse(contentStream, saleDto.getTotalAmount());
             contentStream.endText();
 
-            drawLine(contentStream,0,width,height-value,offsetLine);
+            drawLine(contentStream, 0, width, height - value, offsetLine);
 
             //Content End
             contentStream.close();
-            document.save(String.format("%s%s%s", "/home/ubuntu/Documents/receipts/", saleDto.getId(), ".pdf"));
+            document.save(String.format("%s%s%s", "/app/receipts/", saleDto.getId(), ".pdf"));
             document.close();
 
         } catch (IOException e) {
