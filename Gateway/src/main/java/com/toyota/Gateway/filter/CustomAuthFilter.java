@@ -3,6 +3,7 @@ package com.toyota.Gateway.filter;
 import com.toyota.Gateway.dto.TokenValidateDto;
 import com.toyota.Gateway.exception.CustomForbiddenException;
 import com.toyota.Gateway.exception.InvalidJwtTokenException;
+import com.toyota.Gateway.exception.NoSuchServiceException;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -42,7 +43,13 @@ public class CustomAuthFilter extends AbstractGatewayFilterFactory<CustomAuthFil
                 throw new InvalidJwtTokenException("Authorization header must start with Bearer");
             }
             // Security Service instance
-            ServiceInstance serviceInstance = discoveryClient.getInstances("SECURITY").get(0);
+            ServiceInstance serviceInstance;
+            String serviceName = "SECURITY";
+            try {
+                serviceInstance = discoveryClient.getInstances(serviceName).get(0);
+            } catch (Exception e) {
+                throw new NoSuchServiceException(serviceName + " service is not available");
+            }
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.set("Authorization", authHeader);
             String token = authHeader.substring(7);
