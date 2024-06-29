@@ -1,0 +1,190 @@
+version: '3.8'
+
+services:
+  eureka:
+    build:
+      context: ./eureka
+      dockerfile: Dockerfile
+    container_name: eureka
+    expose:
+      - 8761
+#    ports:
+#      - "8761:8761"
+    environment:
+      - EUREKA_CLIENT_FETCH_REGISTRY=false
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=false
+    networks:
+      - micro-service-network
+
+  gateway:
+    build:
+      context: ./Gateway
+      dockerfile: Dockerfile
+    container_name: gateway
+    ports:
+      - "8080:8080"
+    environment:
+#      - eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka:8761/eureka/
+    networks:
+      - micro-service-network
+    volumes:
+      - /home/ubuntu/Desktop/logs/gateway:/home/ubuntu/Desktop/logs/gateway
+    depends_on:
+      - eureka
+      - user-management
+      - security
+      - sales
+      - report
+      - product
+
+  db:
+    image: 'postgres:13.1-alpine'
+    container_name: db
+    hostname: db
+    expose:
+      - 5432
+#    ports:
+#      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=SpringExample
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - pgdata:/var/lib/postgresql/data # host voluma name: path inside the container
+    networks:
+      - postgres
+      - micro-service-network
+
+  user-management:
+    build:
+      context: ./UserManagement
+      dockerfile: Dockerfile
+    container_name: user-management
+    expose:
+      - 8200
+#    ports:
+#      - "8200:8200"
+    depends_on:
+      - db
+      - eureka
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/SpringExample
+#      - eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka:8761/eureka/
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    networks:
+      - micro-service-network
+    volumes:
+      - /home/ubuntu/Desktop/logs/user-management:/home/ubuntu/Desktop/logs/user-management
+
+
+  security:
+    build:
+      context: ./security
+      dockerfile: Dockerfile
+    container_name: security
+    expose:
+      - 8400
+#    ports:
+#      - "8400:8400"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/SpringExample
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+#      - eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka:8761/eureka/
+    depends_on:
+      - db
+      - eureka
+    networks:
+      - micro-service-network
+    volumes:
+      - /home/ubuntu/Desktop/logs/security:/home/ubuntu/Desktop/logs/security
+
+  sales:
+    build:
+      context: ./Sales
+      dockerfile: Dockerfile
+    container_name: sales
+    expose:
+      - 8100
+#    ports:
+#      - "8100:8100"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/SpringExample
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+#      - eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka:8761/eureka/
+    depends_on:
+      - db
+      - eureka
+    networks:
+      - micro-service-network
+    volumes:
+      - /home/ubuntu/Desktop/logs/sales:/home/ubuntu/Desktop/logs/sales
+
+  report:
+    build:
+      context: ./Report
+      dockerfile: Dockerfile
+    container_name: report
+    expose:
+      - 8300
+#    ports:
+#      - "8300:8300"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/SpringExample
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+#      - eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka:8761/eureka/
+    depends_on:
+      - db
+      - eureka
+    networks:
+      - micro-service-network
+    volumes:
+      - /home/ubuntu/Desktop/logs/report:/home/ubuntu/Desktop/logs/report
+
+  product:
+    build:
+      context: ./Product
+      dockerfile: Dockerfile
+    container_name: product
+#    ports:
+#      - "8000:8000"
+    expose:
+      - 8000
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/SpringExample
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka:8761/eureka/
+#      - eureka.client.service-url.defaultZone=http://eureka:8761/eureka/
+    depends_on:
+      - db
+      - eureka
+    networks:
+      - micro-service-network
+    volumes:
+      - /home/ubuntu/Desktop/logs/product:/home/ubuntu/Desktop/logs/product
+
+
+
+volumes:
+  pgdata:
+
+networks:
+  postgres:
+    driver: bridge
+  micro-service-network:
+    driver: bridge

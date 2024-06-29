@@ -12,8 +12,8 @@
     <artifactId>Entity</artifactId>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+<!--        <maven.compiler.source>17</maven.compiler.source>-->
+<!--        <maven.compiler.target>17</maven.compiler.target>-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
@@ -43,15 +43,17 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>repackage</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
             </plugin>
+            <!-- Other plugins -->
         </plugins>
     </build>
+
+
+
 </project>

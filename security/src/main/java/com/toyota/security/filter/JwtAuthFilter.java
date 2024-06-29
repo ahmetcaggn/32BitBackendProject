@@ -17,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -31,10 +32,24 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         this.resolver = resolver;
     }
 
+    private static final List<String> EXCLUDED_PATHS = List.of(
+            "/security/generateToken",
+            "/security/validateToken",
+            "/security/product"
+    );
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+
+        if (EXCLUDED_PATHS.stream().anyMatch(path::contains)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String username = null;
