@@ -2,6 +2,7 @@ package com.toyota.UserManagement.controller;
 
 import com.toyota.UserManagement.dto.CreateUserRequest;
 import com.toyota.UserManagement.dto.EmployeeDto;
+import com.toyota.UserManagement.dto.EmployeeDtoWithPwd;
 import com.toyota.UserManagement.service.UserManagementService;
 import com.toyota.UserManagement.dto.EmployeeRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class MainController {
     }
 
     @GetMapping("/{username}")
-    public EmployeeDto fetchEmployeeByUsername(@PathVariable String username) throws Exception {
+    public EmployeeDtoWithPwd fetchEmployeeByUsername(@PathVariable String username) {
         return userManagementService.getEmployeeByUsername(username);
     }
 
@@ -30,7 +31,6 @@ public class MainController {
     public EmployeeDto saveEmployee(@RequestBody CreateUserRequest request) {
         return userManagementService.saveEmployee(request);
     }
-
 
     @PutMapping("/{id}")
     public EmployeeDto updateEmployee(@PathVariable("id") Long id, @RequestBody EmployeeRequest employeeRequest) {

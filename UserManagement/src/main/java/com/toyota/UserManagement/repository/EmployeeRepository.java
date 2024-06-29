@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee,Long> {
-    Optional<Employee> findByUsername(String username);
+    Optional<Employee> findByUsernameAndIsDeletedFalse(String username);
     Optional<Employee> findByIsDeletedFalseAndId(Long id);
     List<Employee> findAllByIsDeletedFalse();
 

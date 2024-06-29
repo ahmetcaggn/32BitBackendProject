@@ -3,17 +3,16 @@ package com.toyota.UserManagement.service;
 import com.toyota.UserManagement.Exception.EmployeeNotFoundException;
 import com.toyota.UserManagement.dto.CreateUserRequest;
 import com.toyota.UserManagement.dto.EmployeeDto;
+import com.toyota.UserManagement.dto.EmployeeDtoWithPwd;
 import com.toyota.UserManagement.dto.EmployeeRequest;
 import com.toyota.UserManagement.repository.EmployeeRepository;
 import com.toyota.entity.Employee;
-import com.toyota.entity.Sale;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.jdbc.SqlConfig;
 
 import java.util.HashSet;
 import java.util.List;
@@ -56,13 +55,13 @@ class UserManagementServiceTest {
     public void shouldReturnEmployeeDto_WhenEmployeeExist() {
         // given
         Employee employee = new Employee(1L, "name", "surname", "address", "phoneNo", "username", "password", false, new HashSet<>());
-        EmployeeDto expected = new EmployeeDto(employee);
+        EmployeeDtoWithPwd expected = new EmployeeDtoWithPwd(employee);
         // when
-        Mockito.when(employeeRepository.findByUsername(employee.getUsername())).thenReturn(Optional.of(employee));
-        EmployeeDto result = userManagementService.getEmployeeByUsername(employee.getUsername());
+        Mockito.when(employeeRepository.findByUsernameAndIsDeletedFalse(employee.getUsername())).thenReturn(Optional.of(employee));
+        EmployeeDtoWithPwd result = userManagementService.getEmployeeByUsername(employee.getUsername());
         // then
         assertEquals(expected, result);
-        Mockito.verify(employeeRepository).findByUsername(employee.getUsername());
+        Mockito.verify(employeeRepository).findByUsernameAndIsDeletedFalse(employee.getUsername());
 
     }
 
@@ -72,10 +71,10 @@ class UserManagementServiceTest {
         // given
         Employee employee = new Employee(1L, "name", "surname", "address", "phoneNo", "username", "password", false, new HashSet<>());
         // when
-        Mockito.when(employeeRepository.findByUsername(employee.getUsername())).thenReturn(Optional.empty());
+        Mockito.when(employeeRepository.findByUsernameAndIsDeletedFalse(employee.getUsername())).thenReturn(Optional.empty());
         // then
         assertThrows(EmployeeNotFoundException.class, () -> userManagementService.getEmployeeByUsername(employee.getUsername()));
-        Mockito.verify(employeeRepository).findByUsername(employee.getUsername());
+        Mockito.verify(employeeRepository).findByUsernameAndIsDeletedFalse(employee.getUsername());
     }
 
     @DisplayName("updateEmployeeById() method should return EmployeeDto when employee exist")

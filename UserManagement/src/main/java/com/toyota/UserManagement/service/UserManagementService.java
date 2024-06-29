@@ -3,6 +3,7 @@ package com.toyota.UserManagement.service;
 import com.toyota.UserManagement.Exception.EmployeeNotFoundException;
 import com.toyota.UserManagement.dto.CreateUserRequest;
 import com.toyota.UserManagement.dto.EmployeeDto;
+import com.toyota.UserManagement.dto.EmployeeDtoWithPwd;
 import com.toyota.UserManagement.repository.EmployeeRepository;
 import com.toyota.UserManagement.dto.EmployeeRequest;
 import com.toyota.entity.Employee;
@@ -35,12 +36,12 @@ public class UserManagementService {
         return employeeDtoList;
     }
 
-    public EmployeeDto getEmployeeByUsername(String username)  {
-        Employee employee = employeeRepository.findByUsername(username).orElseThrow(
+    public EmployeeDtoWithPwd getEmployeeByUsername(String username)  {
+        Employee employee = employeeRepository.findByUsernameAndIsDeletedFalse(username).orElseThrow(
                 ()-> new EmployeeNotFoundException("There is no employee with username: " + username)
         );
         log.info("Employee with username {} fetched", username);
-        return new EmployeeDto(employee);
+        return new EmployeeDtoWithPwd(employee);
     }
 
     public EmployeeDto updateEmployeeById(Long id, EmployeeRequest er) {
@@ -49,8 +50,11 @@ public class UserManagementService {
         );
         employee.setName(er.getName());
         employee.setSurname(er.getSurname());
+        employee.setUsername(er.getUsername());
+        employee.setPassword(passwordEncoder.encode(er.getPassword()));
         employee.setAddress(er.getAddress());
         employee.setPhoneNo(er.getPhoneNo());
+        employee.setRoles(er.getRoles());
 
         Employee savedEmployee = employeeRepository.save(employee);
         log.info("Employee with id {} updated", id);
