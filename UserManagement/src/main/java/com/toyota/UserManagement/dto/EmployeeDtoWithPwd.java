@@ -12,22 +12,24 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class EmployeeDto {
+public class EmployeeDtoWithPwd {
     private Long id;
     private String name;
     private String surname;
     private String address;
     private String phoneNo;
     private String username;
+    private String password;
     private Set<Role> roles;
 
-    public EmployeeDto(Employee employee){
+    public EmployeeDtoWithPwd(Employee employee){
         this.id = employee.getId();
         this.name = employee.getName();
         this.surname = employee.getSurname();
         this.address = employee.getAddress();
         this.phoneNo = employee.getPhoneNo();
         this.username = employee.getUsername();
+        this.password = employee.getPassword();
         this.roles = employee.getRoles();
     }
 
