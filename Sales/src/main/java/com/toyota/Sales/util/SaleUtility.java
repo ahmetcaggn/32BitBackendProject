@@ -22,6 +22,7 @@ public final class SaleUtility {
         sale.setTotalAmount(total);
     }
 
+
     public static void setSaleTotalTax(Sale sale) {
         float total = 0f;
         for (SaleProduct saleProduct : sale.getSalesProducts()) {

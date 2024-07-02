@@ -27,12 +27,19 @@ public class GlobalExceptionHandler {
                 .body(exception.getMessage());
     }
 
-
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Object> handleProductNotFoundException(MethodArgumentTypeMismatchException exception) {
         log.error(exception.getMessage(), exception);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
+                .body(exception.getMessage());
+    }
+
+    @ExceptionHandler(SaleNotCompletedException.class)
+    public ResponseEntity<Object> handleSaleNotCompletedException(SaleNotCompletedException exception) {
+        log.error(exception.getMessage(), exception);
+        return ResponseEntity
+                .status(HttpStatus.PRECONDITION_FAILED)
                 .body(exception.getMessage());
     }
 

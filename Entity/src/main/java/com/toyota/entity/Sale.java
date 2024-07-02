@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -23,6 +24,13 @@ public class Sale {
     private Long id;
     private float totalAmount;
     private float totalTax;
+
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private Boolean isCompleted;
+    private float cashAmount;
+    private float creditCardAmount;
+    private float lastPrice;
     private LocalDateTime dateTime;
 
 

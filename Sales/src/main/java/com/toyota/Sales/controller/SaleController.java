@@ -1,6 +1,7 @@
 package com.toyota.Sales.controller;
 
 import com.toyota.Sales.dto.CampaignDto;
+import com.toyota.Sales.dto.PaymentDto;
 import com.toyota.Sales.dto.SaleDto;
 import com.toyota.Sales.service.CampaignService;
 import com.toyota.Sales.service.SalesService;
@@ -59,6 +60,11 @@ public class SaleController {
     @PostMapping("/{saleId}/products/{productId}")
     public SaleProductDto addProductToSale(@PathVariable("saleId") Long saleId, @PathVariable("productId") Long productId, @RequestParam(defaultValue = "1") Float quantity) {
         return salesService.addSaleProduct(saleId, productId, quantity);
+    }
+
+    @PostMapping("/{saleId}/complete")
+    public SaleDto completeSale(@PathVariable("saleId") Long saleId, @RequestBody PaymentDto paymentDto) {
+        return salesService.completeSale(saleId, paymentDto);
     }
 
     @PostMapping("/{saleId}/campaigns/{campaignId}")

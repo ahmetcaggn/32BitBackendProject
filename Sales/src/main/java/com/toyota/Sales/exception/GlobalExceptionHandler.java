@@ -66,4 +66,20 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(exception.getMessage());
     }
+
+    @ExceptionHandler(PaymentMismatchException.class)
+    public ResponseEntity<Object> handlePaymentMismatchException(PaymentMismatchException exception) {
+        log.error("Payment mismatch: ", exception);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(exception.getMessage());
+    }
+
+    @ExceptionHandler(SaleAlreadyCompletedException.class)
+    public ResponseEntity<Object> handleSaleAlreadyCompletedException(SaleAlreadyCompletedException exception) {
+        log.error("Sale already completed: ", exception);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(exception.getMessage());
+    }
 }

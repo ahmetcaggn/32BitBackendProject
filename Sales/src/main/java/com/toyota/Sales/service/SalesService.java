@@ -1,10 +1,8 @@
 package com.toyota.Sales.service;
 
 import com.toyota.Sales.dto.*;
+import com.toyota.Sales.exception.*;
 import com.toyota.Sales.interfaces.ProductInterface;
-import com.toyota.Sales.exception.CampaignNotFoundException;
-import com.toyota.Sales.exception.SaleNotFoundException;
-import com.toyota.Sales.exception.SaleProductNotFoundException;
 import com.toyota.Sales.repository.CampaignRepository;
 import com.toyota.Sales.repository.SaleCampaignRepository;
 import com.toyota.Sales.repository.SaleProductRepository;
@@ -39,6 +37,10 @@ public class SalesService {
         Sale sale = new Sale();
         sale.setTotalAmount(0);
         sale.setTotalTax(0);
+        sale.setIsCompleted(false);
+        sale.setCashAmount(0);
+        sale.setCreditCardAmount(0);
+        sale.setLastPrice(0);
         sale.setDateTime(LocalDateTime.now());
         SaleDto saleDto = new SaleDto(saleRepository.save(sale));
         log.info("Sale is created: {}", saleDto.toString());
@@ -77,6 +79,9 @@ public class SalesService {
         Sale sale = saleRepository.findById(saleId).orElseThrow(
                 () -> new SaleNotFoundException("There is no sale with id: " + saleId)
         );
+        if (sale.getIsCompleted()) {
+            throw new SaleAlreadyCompletedException("Sale with id: " + saleId + " is already completed. You can not add product to completed sale");
+        }
 
         ProductDto productDto = productInterface.getProductById(productId);
         SaleProduct saleProduct = new SaleProduct();
@@ -84,9 +89,29 @@ public class SalesService {
         saleProduct.setQuantity(quantity);
         setSaleTotalAmount(sale, saleProduct);
         setSaleTotalTax(sale, saleProduct);
+        sale.setLastPrice(sale.getLastPrice()+saleProduct.getQuantity()*saleProduct.getProduct().getPrice());
         saleProduct.setSale(sale);
         log.info("{} Product with id {} added to Sale with id {}", quantity, productId, saleId);
         return new SaleProductDto(saleProductRepository.save(saleProduct));
+    }
+
+    public SaleDto completeSale(Long saleId, PaymentDto paymentDto) {
+        Sale sale = saleRepository.findById(saleId).orElseThrow(
+                () -> new SaleNotFoundException("There is no sale with id: " + saleId)
+        );
+        if (sale.getIsCompleted()) {
+            throw new SaleAlreadyCompletedException("Sale with id: " + saleId + " is already completed");
+        }
+        if (paymentDto.getCashAmount() + paymentDto.getCreditCardAmount() != sale.getLastPrice()) {
+            throw new PaymentMismatchException("Payment amount is not equal to total amount");
+        }
+        sale.setIsCompleted(true);
+        sale.setCashAmount(paymentDto.getCashAmount());
+        sale.setCreditCardAmount(paymentDto.getCreditCardAmount());
+        saleRepository.save(sale);
+        log.info("Sale with id {} is completed", saleId);
+        return new SaleDto(sale);
+
     }
 
     public SaleProductDto updateSaleProduct(Long saleProductId, Float quantity) {
@@ -126,6 +151,7 @@ public class SalesService {
         saleCampaign.setSale(sale);
         saleCampaign.setCampaign(campaign);
         saleCampaign.setDiscountAmount(discountAmount);
+        saleCampaign.getSale().setLastPrice(sale.getTotalAmount()-discountAmount);
         saleCampaignRepository.save(saleCampaign);
 
         SaleDto saleDto = new SaleDto(sale);
