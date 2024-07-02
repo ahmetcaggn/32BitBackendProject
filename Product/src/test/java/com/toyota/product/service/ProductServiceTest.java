@@ -1,14 +1,13 @@
 package com.toyota.product.service;
 
+import com.toyota.entity.Product;
 import com.toyota.product.dto.ProductDto;
-import com.toyota.product.entity.Product;
 import com.toyota.product.exception.ProductNotFoundException;
 import com.toyota.product.repository.ProductRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.mockito.internal.verification.Times;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -32,7 +31,7 @@ class ProductServiceTest {
     void shouldReturnProductDtoWithGivenId_WhenProductExists() {
         // given
         Long id = 1L;
-        Product product = new Product(id, 123L, "product", 100.0f, false, 0.18f);
+        Product product = new Product(id, 123L, "product", 100.0f, false, 0.18f,new HashSet<>(),new HashSet<>());
         ProductDto expectedProductDto = new ProductDto(product);
         // when
         Mockito.when(productRepository.findByIdAndIsDeletedFalse(id)).thenReturn(Optional.of(product));
@@ -58,12 +57,12 @@ class ProductServiceTest {
     void shouldReturnProductDtoSet_WhenProductsExist() {
         // given
         Set<Product> productList = new HashSet<>();
-        productList.add(new Product(1L, 100001L, "product1", 100.0f, false, 0.18f));
-        productList.add(new Product(2L, 100002L, "product2", 200.0f, false, 0.18f));
+        productList.add(new Product(1L, 100001L, "product1", 100.0f, false, 0.18f,new HashSet<>(),new HashSet<>()));
+        productList.add(new Product(2L, 100002L, "product2", 200.0f, false, 0.18f,new HashSet<>(),new HashSet<>()));
 
-        Set<ProductDto> expectedProductDtos = new HashSet<>();
+        Set<ProductDto> expectedProductDtoSet = new HashSet<>();
         for (Product product : productList) {
-            expectedProductDtos.add(new ProductDto(product));
+            expectedProductDtoSet.add(new ProductDto(product));
         }
 
         // when
@@ -71,7 +70,7 @@ class ProductServiceTest {
         Set<ProductDto> result = productService.getAllProducts();
 
         // then
-        assertEquals(expectedProductDtos, result);
+        assertEquals(expectedProductDtoSet, result);
         Mockito.verify(productRepository).findAllByIsDeletedFalse();
     }
 
