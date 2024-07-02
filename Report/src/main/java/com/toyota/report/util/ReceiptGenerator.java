@@ -2,7 +2,6 @@ package com.toyota.report.util;
 
 import com.toyota.report.dto.SaleDto;
 import com.toyota.report.dto.SaleProductDto;
-import com.toyota.report.interfaces.SaleInterface;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -17,36 +16,35 @@ import static com.toyota.report.util.DirectoryUtil.getFontNameFromDirectory;
 @Component
 public class ReceiptGenerator {
     private final int contentLengthIntroduction = 13;
-    private final int contentLengthEnd = 8;
+    private final int contentLengthEnd = 9;
     private final float fontLeading = 12f;
+    private float height = 0;
     private final float width = 300f;
     private final float offsetX = 10f;
     private final float offsetY = 25f;
     private final float offsetLine = 15f;
     private final float fontSize = 10f;
 
-    private final SaleInterface saleInterface;
     private PDType0Font font;
     private float value = 0f;
     private float text_width = 0;
 
 
-    public ReceiptGenerator(SaleInterface saleInterface) {
-        this.saleInterface = saleInterface;
-    }
-
-    public void generateReceipt(Long saleId) {
+    public void generateReceipt(SaleDto saleDto) {
         try (PDDocument document = new PDDocument()) {
             PDPage page = new PDPage();
 
-            float height = 0;
             int rows = 0;
+            int paymenRows = 0;
             value = offsetY;
-            SaleDto saleDto = saleInterface.getSaleById(saleId).getBody();
-
+            height = 0;
+            if (saleDto != null && saleDto.getCashAmount()>0) paymenRows++;
+            if (saleDto != null && saleDto.getCreditCardAmount()>0) paymenRows++;
+            if (saleDto != null && saleDto.getDiscountAmount()>0) paymenRows++;
             rows = saleDto != null ? saleDto.getSaleProducts().size() : 0;
             height += contentLengthIntroduction * fontLeading;
             height += rows * fontLeading * 2.5f;
+            height += paymenRows * fontLeading;
             height += contentLengthEnd * fontLeading;
 
             page.setMediaBox(new PDRectangle(width, height));
@@ -59,7 +57,7 @@ public class ReceiptGenerator {
             contentStream.setLeading(fontLeading);
             value = contentLengthIntroduction * (int) fontLeading;
             //Content
-            writeMessage(contentStream, "Thanks for your purchase");
+            writeMessage(contentStream, "Alışverişiniz İçin Teşekkür Ederiz");
             writeMessage(contentStream, "Toyota Comp. Ltd.");
             writeMessage(contentStream, "Kemalpaşa Mah. Üniversite Cad.");
             writeMessage(contentStream, "No: 92/D Serdivan/Sakarya");
@@ -97,29 +95,27 @@ public class ReceiptGenerator {
                 value += (int) (fontLeading * 2.5);
                 contentStream.endText();
             }
+            value += (int) fontLeading;
+
+            writePrices("Ara Toplam",saleDto.getTotalAmount(), contentStream);
+            if (saleDto.getDiscountAmount() > 0){
+                writePrices("Indirim Tutari",saleDto.getDiscountAmount(), contentStream);
+            }
 
             //drawing a line
-            value += (int) fontLeading;
             drawLine(contentStream, page.getMediaBox().getLowerLeftX(), page.getMediaBox().getUpperRightX(), height - value, offsetLine);
 
-            contentStream.beginText();
-            contentStream.newLineAtOffset(offsetX, height - value);
-//            writeMessage(contentStream, String.format("%s: %f", "TOPKDV", saleDto.getTotalTax()));
-//            writeMessage(contentStream, String.format("%s: %f", "TOPLAM", saleDto.getTotalAmount()));
-            contentStream.showText("TOPKDV:");
-
-            contentStream.newLineAtOffset(page.getMediaBox().getUpperRightX() - offsetX * 2, 0);
-            writeReverse(contentStream, saleDto.getTotalTax());
-            contentStream.endText();
-
-            contentStream.beginText();
-            contentStream.newLineAtOffset(offsetX, height - value);
-            contentStream.showText("TOPLAM:");
-            contentStream.newLineAtOffset(width - offsetX * 2, 0);
-            writeReverse(contentStream, saleDto.getTotalAmount());
-            contentStream.endText();
+            writePrices("TOPKDV",saleDto.getTotalTax(), contentStream);
+            writePrices("TOPLAM",saleDto.getLastPrice(), contentStream);
 
             drawLine(contentStream, 0, width, height - value, offsetLine);
+
+            if (saleDto.getCashAmount() > 0) {
+                writePrices("Nakit",saleDto.getCashAmount(), contentStream);
+            }
+            if (saleDto.getCreditCardAmount() > 0) {
+                writePrices("Kredi kartı",saleDto.getCreditCardAmount(), contentStream);
+            }
 
             //Content End
             contentStream.close();
@@ -167,5 +163,12 @@ public class ReceiptGenerator {
         value += (int) fontLeading;
     }
 
-
+    private void writePrices(String message, float price, PDPageContentStream contentStream) throws IOException {
+        contentStream.beginText();
+        contentStream.newLineAtOffset(offsetX, height - value);
+        contentStream.showText(message);
+        contentStream.newLineAtOffset(width - offsetX * 2, 0);
+        writeReverse(contentStream, price);
+        contentStream.endText();
+    }
 }

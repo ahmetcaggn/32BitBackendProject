@@ -20,6 +20,9 @@ public class SaleDto {
     private float totalTax;
     private float discountAmount;
     private float lastPrice;
+    private Boolean isCompleted;
+    private float cashAmount;
+    private float creditCardAmount;
     private LocalDateTime localDateTime;
     private Set<SaleProductDto> saleProducts = new HashSet<>();
     private Set<CampaignDto> saleCampaigns = new HashSet<>();
@@ -29,6 +32,10 @@ public class SaleDto {
         this.totalAmount = sale.getTotalAmount();
         this.totalTax = sale.getTotalTax();
         this.localDateTime = sale.getDateTime();
+        this.isCompleted = sale.getIsCompleted();
+        this.cashAmount = sale.getCashAmount();
+        this.lastPrice = sale.getLastPrice();
+        this.creditCardAmount = sale.getCreditCardAmount();
         for (SaleProduct saleProduct : sale.getSalesProducts()){
             this.saleProducts.add(new SaleProductDto(saleProduct));
         }
@@ -36,7 +43,6 @@ public class SaleDto {
             this.saleCampaigns.add(new CampaignDto(saleCampaign.getCampaign()));
             this.discountAmount+=saleCampaign.getDiscountAmount();
         }
-        this.lastPrice = this.totalAmount - this.discountAmount;
     }
 
 }

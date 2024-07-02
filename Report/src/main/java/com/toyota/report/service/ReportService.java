@@ -1,13 +1,12 @@
 package com.toyota.report.service;
 
 import com.toyota.report.dto.SaleDto;
+import com.toyota.report.exception.SaleNotCompletedException;
 import com.toyota.report.interfaces.SaleInterface;
 import com.toyota.report.util.ReceiptGenerator;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
 
 
 @Service
@@ -36,7 +35,11 @@ public class ReportService {
     }
 
     public void generateReceipt(Long saleId) {
-        receiptGenerator.generateReceipt(saleId);
+        SaleDto saleDto = saleInterface.getSaleById(saleId).getBody();
+        if (saleDto!=null && !saleDto.getIsCompleted()) {
+            throw new SaleNotCompletedException("Sale with id " + saleId + " is not completed. Please complete the sale first.");
+        }
+        receiptGenerator.generateReceipt(saleDto);
         log.info("Receipt generated for sale with id {}", saleId);
     }
 }

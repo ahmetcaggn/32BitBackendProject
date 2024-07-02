@@ -2,7 +2,9 @@ package com.toyota.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -21,6 +23,13 @@ public class Sale {
     private Long id;
     private float totalAmount;
     private float totalTax;
+
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private Boolean isCompleted;
+    private float cashAmount;
+    private float creditCardAmount;
+    private float lastPrice;
     private LocalDateTime dateTime;
 
 
