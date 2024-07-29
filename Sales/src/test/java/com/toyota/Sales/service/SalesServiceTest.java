@@ -1,6 +1,5 @@
 package com.toyota.Sales.service;
 
-import com.toyota.Sales.dto.CampaignDto;
 import com.toyota.Sales.dto.ProductDto;
 import com.toyota.Sales.dto.SaleDto;
 import com.toyota.Sales.dto.SaleProductDto;
@@ -72,7 +71,7 @@ class SalesServiceTest {
         Long productId = 1L;
         Float quantity = 5f;
         //given
-        Sale sale = new Sale(saleId, 100f, 10f, LocalDateTime.now(), new HashSet<>(), new HashSet<>());
+        Sale sale = new Sale(saleId, 100f, 10f,false,100f,0f,100f,LocalDateTime.now(), new HashSet<>(), new HashSet<>());
         ProductDto productDto = new ProductDto(1L, 100001L, "productDto", 100f, 0.18f);
 
         SaleProduct saleProduct = new SaleProduct();
@@ -103,7 +102,7 @@ class SalesServiceTest {
         Long productId = 1L;
         Float quantity = null;
         //given
-        Sale sale = new Sale(saleId, 100f, 10f, LocalDateTime.now(), new HashSet<>(), new HashSet<>());
+        Sale sale = new Sale(saleId, 100f, 10f,false,100f,0f,100f,LocalDateTime.now(), new HashSet<>(), new HashSet<>());
         ProductDto productDto = new ProductDto(1L, 100001L, "productDto", 100f, 0.18f);
 
         SaleProduct saleProduct = new SaleProduct();
@@ -134,7 +133,7 @@ class SalesServiceTest {
         Long productId = 1L;
         Float quantity = -5f;
         //given
-        Sale sale = new Sale(saleId, 100f, 10f, LocalDateTime.now(), new HashSet<>(), new HashSet<>());
+        Sale sale = new Sale(saleId, 100f, 10f,false,100f,0f,100f,LocalDateTime.now(), new HashSet<>(), new HashSet<>());
         ProductDto productDto = new ProductDto(1L, 100001L, "productDto", 100f, 0.18f);
 
         SaleProduct saleProduct = new SaleProduct();
@@ -180,7 +179,7 @@ class SalesServiceTest {
     void shouldReturnSaleDtoWithSaleId_whenSaleExists() {
         //given
         Long saleId = 1L;
-        Sale sale = new Sale(saleId, 100f, 10f, LocalDateTime.now(), new HashSet<>(), new HashSet<>());
+        Sale sale = new Sale(saleId, 100f, 10f,false,100f,0f,100f,LocalDateTime.now(), new HashSet<>(), new HashSet<>());
         SaleDto expected = new SaleDto(sale);
         //when
         Mockito.when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
@@ -207,7 +206,7 @@ class SalesServiceTest {
         // given
         Long saleProductId = 1L;
         Float originalQuantity = 5f;
-        Float defaultQuantity = 1F;
+
         Float updatedQuantityParameter = 10f;
         SaleProduct saleProduct = new SaleProduct(saleProductId, originalQuantity, new Product(), new Sale());
         SaleProduct updatedSaleProduct = new SaleProduct(saleProductId, updatedQuantityParameter, new Product(), new Sale());
@@ -333,26 +332,14 @@ class SalesServiceTest {
         assertThrows(CampaignNotFoundException.class, () -> salesService.calculateDiscountAmount(new ArrayList<>(), campaignId));
     }
 
-//    @DisplayName("should return CampaignDto list with given saleId when getAllRelevantCampaignsBySaleId() method calls with existing saleId")
-//    @Test
-//    public void shouldReturnCampaignDtoListWithGivenSaleId_WhenCampaignExist() {
-//        // given
-//        Long saleId = 1L;
-//        Sale sale = new Sale(saleId, 100f, 10f, LocalDateTime.now(), new HashSet<>(), new HashSet<>());
-//
-//
-//
-//    }
-
     @DisplayName("applyCampaignToSale() method should return SaleDto with given saleId and campaignId when sale and campaign exist")
     @Test
     public void shouldReturnSaleDtoWithGivenParameter_WhenSaleAndCampaignExists() {
         // given
         Long saleId = 1L;
         Long campaignId = 1L;
-        Sale sale = new Sale(saleId, 100f, 10f, LocalDateTime.now(), new HashSet<>(), new HashSet<>());
+        Sale sale = new Sale(saleId, 100f, 10f,false,100f,0f,100f,LocalDateTime.now(), new HashSet<>(), new HashSet<>());
         Campaign campaign = new Campaign(1L, "campaign", 10f, new HashSet<>(), new HashSet<>());
-        SaleProduct saleProduct = new SaleProduct(1L, 5f, null, sale);
         SaleCampaign saleCampaign = new SaleCampaign(1L, 10f, sale, campaign);
         SaleDto expected = new SaleDto(sale);
         //when
@@ -387,7 +374,7 @@ class SalesServiceTest {
         // given
         Long saleId = 1L;
         Long campaignId = 1L;
-        Sale sale = new Sale(saleId, 100f, 10f, LocalDateTime.now(), new HashSet<>(), new HashSet<>());
+        Sale sale = new Sale(saleId, 100f, 10f,false,100f,0f,100f,LocalDateTime.now(), new HashSet<>(), new HashSet<>());
         //when
         Mockito.when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
         Mockito.when(campaignRepository.findById(campaignId)).thenReturn(Optional.empty());

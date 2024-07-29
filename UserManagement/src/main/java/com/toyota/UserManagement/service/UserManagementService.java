@@ -1,11 +1,10 @@
 package com.toyota.UserManagement.service;
 
 import com.toyota.UserManagement.Exception.EmployeeNotFoundException;
-import com.toyota.UserManagement.dto.CreateUserRequest;
 import com.toyota.UserManagement.dto.EmployeeDto;
 import com.toyota.UserManagement.dto.EmployeeDtoWithPwd;
 import com.toyota.UserManagement.repository.EmployeeRepository;
-import com.toyota.UserManagement.dto.EmployeeRequest;
+import com.toyota.UserManagement.dto.EmployeeRequestDto;
 import com.toyota.entity.Employee;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,7 +43,7 @@ public class UserManagementService {
         return new EmployeeDtoWithPwd(employee);
     }
 
-    public EmployeeDto updateEmployeeById(Long id, EmployeeRequest er) {
+    public EmployeeDto updateEmployeeById(Long id, EmployeeRequestDto er) {
         Employee employee = employeeRepository.findByIsDeletedFalseAndId(id).orElseThrow(
                 ()-> new EmployeeNotFoundException("There is no employee with id: " + id)
         );
@@ -61,16 +60,16 @@ public class UserManagementService {
         return new EmployeeDto(savedEmployee);
     }
 
-    public EmployeeDto saveEmployee(CreateUserRequest employeeRequest) {
+    public EmployeeDto saveEmployee(EmployeeRequestDto employeeRequestDto) {
         Employee employee = Employee.builder()
-                .name(employeeRequest.getName())
-                .surname(employeeRequest.getSurname())
-                .address(employeeRequest.getAddress())
-                .phoneNo(employeeRequest.getPhoneNo())
-                .username(employeeRequest.getUsername())
+                .name(employeeRequestDto.getName())
+                .surname(employeeRequestDto.getSurname())
+                .address(employeeRequestDto.getAddress())
+                .phoneNo(employeeRequestDto.getPhoneNo())
+                .username(employeeRequestDto.getUsername())
                 .isDeleted(false)
-                .password(passwordEncoder.encode(employeeRequest.getPassword()))
-                .roles(employeeRequest.getRoles())
+                .password(passwordEncoder.encode(employeeRequestDto.getPassword()))
+                .roles(employeeRequestDto.getRoles())
                 .build();
 
         Employee savedEmployee = employeeRepository.save(employee);

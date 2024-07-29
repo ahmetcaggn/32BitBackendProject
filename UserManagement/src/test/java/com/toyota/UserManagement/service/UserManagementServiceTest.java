@@ -1,10 +1,9 @@
 package com.toyota.UserManagement.service;
 
 import com.toyota.UserManagement.Exception.EmployeeNotFoundException;
-import com.toyota.UserManagement.dto.CreateUserRequest;
 import com.toyota.UserManagement.dto.EmployeeDto;
 import com.toyota.UserManagement.dto.EmployeeDtoWithPwd;
-import com.toyota.UserManagement.dto.EmployeeRequest;
+import com.toyota.UserManagement.dto.EmployeeRequestDto;
 import com.toyota.UserManagement.repository.EmployeeRepository;
 import com.toyota.entity.Employee;
 import org.junit.jupiter.api.AfterEach;
@@ -82,20 +81,20 @@ class UserManagementServiceTest {
     void shouldReturnEmployeeAndUpdateEmployeeInformation_WhenGivenIdIsExist() {
         // given
         Employee employee = new Employee(1L, "name", "surname", "address", "phoneNo", "username", "password", false, new HashSet<>());
-        EmployeeRequest updatedEmployeeRequest = new EmployeeRequest("John", "surname1","username", "address", "address","phoneNo",new HashSet<>());
-        employee.setName(updatedEmployeeRequest.getName());
-        employee.setSurname(updatedEmployeeRequest.getSurname());
-        employee.setUsername(updatedEmployeeRequest.getUsername());
+        EmployeeRequestDto updatedEmployeeRequestDto = new EmployeeRequestDto("John", "surname1","username", "address", "address","phoneNo",new HashSet<>());
+        employee.setName(updatedEmployeeRequestDto.getName());
+        employee.setSurname(updatedEmployeeRequestDto.getSurname());
+        employee.setUsername(updatedEmployeeRequestDto.getUsername());
         employee.setPassword(passwordEncoder.encode(employee.getPassword()));
-        employee.setAddress(updatedEmployeeRequest.getAddress());
-        employee.setPhoneNo(updatedEmployeeRequest.getPhoneNo());
-        employee.setRoles(updatedEmployeeRequest.getRoles());
+        employee.setAddress(updatedEmployeeRequestDto.getAddress());
+        employee.setPhoneNo(updatedEmployeeRequestDto.getPhoneNo());
+        employee.setRoles(updatedEmployeeRequestDto.getRoles());
 
         EmployeeDto expected = new EmployeeDto(employee);
         // when
         Mockito.when(employeeRepository.findByIsDeletedFalseAndId(employee.getId())).thenReturn(Optional.of(employee));
         Mockito.when(employeeRepository.save(employee)).thenReturn(employee);
-        EmployeeDto result = userManagementService.updateEmployeeById(employee.getId(), updatedEmployeeRequest);
+        EmployeeDto result = userManagementService.updateEmployeeById(employee.getId(), updatedEmployeeRequestDto);
         // then
         assertEquals(expected, result);
         Mockito.verify(employeeRepository).findByIsDeletedFalseAndId(employee.getId());
@@ -107,11 +106,11 @@ class UserManagementServiceTest {
     void shouldThrowEmployeeNotFoundException_WhenGivenIdIsNotExist() {
         // given
         Long employeeId = 1L;
-        EmployeeRequest updatedEmployeeRequest = new EmployeeRequest("John", "surname1","username", "address", "address","phoneNo",new HashSet<>());
+        EmployeeRequestDto updatedEmployeeRequestDto = new EmployeeRequestDto("John", "surname1","username", "address", "address","phoneNo",new HashSet<>());
         // when
         Mockito.when(employeeRepository.findByIsDeletedFalseAndId(employeeId)).thenReturn(Optional.empty());
         // then
-        assertThrows(EmployeeNotFoundException.class, () -> userManagementService.updateEmployeeById(employeeId, updatedEmployeeRequest));
+        assertThrows(EmployeeNotFoundException.class, () -> userManagementService.updateEmployeeById(employeeId, updatedEmployeeRequestDto));
         Mockito.verify(employeeRepository).findByIsDeletedFalseAndId(employeeId);
     }
 
@@ -119,32 +118,32 @@ class UserManagementServiceTest {
     @Test
     void shouldReturnEmployeeDto_WhenGivenEmployeeRequestDtoIsValid() {
         // given
-        CreateUserRequest employeeRequest = new CreateUserRequest("name", "surname", "address", "phoneNo", "username", "password", new HashSet<>());
+        EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto("name", "surname", "phoneNo", "username","address","", new HashSet<>());
         Employee employee = Employee.builder()
-                .name(employeeRequest.getName())
-                .surname(employeeRequest.getSurname())
-                .address(employeeRequest.getAddress())
-                .phoneNo(employeeRequest.getPhoneNo())
-                .username(employeeRequest.getUsername())
+                .name(employeeRequestDto.getName())
+                .surname(employeeRequestDto.getSurname())
+                .address(employeeRequestDto.getAddress())
+                .phoneNo(employeeRequestDto.getPhoneNo())
+                .username(employeeRequestDto.getUsername())
                 .isDeleted(false)
-                .password(passwordEncoder.encode(employeeRequest.getPassword()))
-                .roles(employeeRequest.getRoles())
+                .password(passwordEncoder.encode(employeeRequestDto.getPassword()))
+                .roles(employeeRequestDto.getRoles())
                 .build();
         Employee savedEmployee = Employee.builder()
                 .id(1L)
-                .name(employeeRequest.getName())
-                .surname(employeeRequest.getSurname())
-                .address(employeeRequest.getAddress())
-                .phoneNo(employeeRequest.getPhoneNo())
-                .username(employeeRequest.getUsername())
+                .name(employeeRequestDto.getName())
+                .surname(employeeRequestDto.getSurname())
+                .address(employeeRequestDto.getAddress())
+                .phoneNo(employeeRequestDto.getPhoneNo())
+                .username(employeeRequestDto.getUsername())
                 .isDeleted(false)
-                .password(passwordEncoder.encode(employeeRequest.getPassword()))
-                .roles(employeeRequest.getRoles())
+                .password(passwordEncoder.encode(employeeRequestDto.getPassword()))
+                .roles(employeeRequestDto.getRoles())
                 .build();
         EmployeeDto expected = new EmployeeDto(savedEmployee);
         // when
         Mockito.when(employeeRepository.save(Mockito.any())).thenReturn(savedEmployee);
-        EmployeeDto result = userManagementService.saveEmployee(employeeRequest);
+        EmployeeDto result = userManagementService.saveEmployee(employeeRequestDto);
         // then
         assertEquals(expected, result);
         Mockito.verify(employeeRepository).save(employee);

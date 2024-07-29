@@ -37,3 +37,4 @@ Receipts/*.pdf
 
 ### Logs ###
 Logs/**/*.log
+Logs/**/*.gz

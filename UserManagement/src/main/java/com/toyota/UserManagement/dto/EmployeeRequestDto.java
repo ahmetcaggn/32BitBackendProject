@@ -12,7 +12,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-public class EmployeeRequest {
+public class EmployeeRequestDto {
     private String name;
     private String surname;
     private String username;

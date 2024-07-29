@@ -65,16 +65,16 @@ class CampaignServiceTest {
         campaignList.add(new Campaign(1L, "campaign1", 0.10f, new HashSet<>(), new HashSet<>()));
         campaignList.add(new Campaign(2L, "campaign2", 0.10f, new HashSet<>(), new HashSet<>()));
 
-        List<CampaignDto> expectedCampaignDtos = new ArrayList<>();
+        List<CampaignDto> expectedCampaignDtoList = new ArrayList<>();
         for (Campaign campaign : campaignList) {
-            expectedCampaignDtos.add(new CampaignDto(campaign));
+            expectedCampaignDtoList.add(new CampaignDto(campaign));
         }
 
         // when
         Mockito.when(campaignRepository.findAll()).thenReturn(campaignList);
         List<CampaignDto> result = campaignService.getAllCampaigns();
         // then
-        assertEquals(expectedCampaignDtos,result);
+        assertEquals(expectedCampaignDtoList,result);
         Mockito.verify(campaignRepository).findAll();
     }
 
